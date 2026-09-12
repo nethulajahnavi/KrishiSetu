@@ -1,0 +1,723 @@
+/* =========================================
+   KRISHISETU AI ASSISTANT
+   ========================================= */
+
+.assistant-page {
+  padding: 30px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+
+/* =========================================
+   HEADER
+   ========================================= */
+
+.assistant-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 28px;
+}
+
+.page-eyebrow {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  color: #4f8a5b;
+  margin-bottom: 8px;
+}
+
+.assistant-header h1 {
+  margin: 0;
+  font-size: 34px;
+  line-height: 1.15;
+  color: #1f2d22;
+}
+
+.assistant-header p {
+  margin: 9px 0 0;
+  color: #718074;
+  font-size: 14px;
+}
+
+.assistant-status {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border: 1px solid #dce9df;
+  border-radius: 999px;
+  background: #f7fbf8;
+  color: #477853;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.assistant-status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4caf62;
+}
+
+
+/* =========================================
+   MAIN ASK CARD
+   ========================================= */
+
+.assistant-card {
+  background: #ffffff;
+  border: 1px solid #e4ebe5;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 5px 22px rgba(40, 65, 45, 0.05);
+  margin-bottom: 24px;
+}
+
+.assistant-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.assistant-bot-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eaf5ec;
+  color: #43804f;
+  flex-shrink: 0;
+}
+
+.assistant-card-heading h2 {
+  margin: 0;
+  color: #243127;
+  font-size: 19px;
+}
+
+.assistant-card-heading p {
+  margin: 5px 0 0;
+  color: #7a857c;
+  font-size: 13px;
+}
+
+
+/* =========================================
+   CONTEXT INPUTS
+   ========================================= */
+
+.assistant-context {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.assistant-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.assistant-input-group label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #59655c;
+}
+
+.assistant-input-group input,
+.assistant-input-group select {
+  width: 100%;
+  height: 44px;
+  padding: 0 13px;
+  border: 1px solid #dce4dd;
+  border-radius: 10px;
+  background: #fbfdfb;
+  color: #263229;
+  font-size: 14px;
+  outline: none;
+  box-sizing: border-box;
+  transition: 0.2s ease;
+}
+
+.assistant-input-group input:focus,
+.assistant-input-group select:focus {
+  border-color: #76a97e;
+  box-shadow: 0 0 0 3px rgba(92, 145, 102, 0.1);
+  background: #fff;
+}
+
+
+/* =========================================
+   QUESTION
+   ========================================= */
+
+.assistant-question {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.assistant-question textarea {
+  width: 100%;
+  resize: vertical;
+  min-height: 105px;
+  padding: 15px;
+  border: 1px solid #dce4dd;
+  border-radius: 13px;
+  background: #fbfdfb;
+  color: #263229;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  outline: none;
+  box-sizing: border-box;
+}
+
+.assistant-question textarea:focus {
+  border-color: #76a97e;
+  box-shadow: 0 0 0 3px rgba(92, 145, 102, 0.1);
+  background: #fff;
+}
+
+.assistant-question textarea::placeholder {
+  color: #9aa49c;
+}
+
+.assistant-send-button {
+  align-self: flex-end;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: none;
+  border-radius: 10px;
+  padding: 12px 18px;
+  background: #397c47;
+  color: white;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.assistant-send-button:hover {
+  background: #2f6b3c;
+  transform: translateY(-1px);
+}
+
+.assistant-send-button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+  transform: none;
+}
+
+
+/* =========================================
+   SUGGESTED QUESTIONS
+   ========================================= */
+
+.assistant-suggestions {
+  margin-top: 18px;
+}
+
+.assistant-suggestions > span {
+  display: block;
+  margin-bottom: 9px;
+  color: #818a83;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.assistant-suggestions > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.assistant-suggestions button {
+  border: 1px solid #dce8de;
+  background: #f7faf7;
+  color: #55725b;
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.assistant-suggestions button:hover {
+  background: #eaf5ec;
+  border-color: #bcd6c1;
+}
+
+
+/* =========================================
+   ERROR
+   ========================================= */
+
+.assistant-error {
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  background: #fff4f3;
+  border: 1px solid #f1d1ce;
+  color: #b5473f;
+  font-size: 13px;
+}
+
+
+/* =========================================
+   RESPONSE
+   ========================================= */
+
+.assistant-response {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+
+/* =========================================
+   ANSWER CARD
+   ========================================= */
+
+.answer-card {
+  background: linear-gradient(
+    135deg,
+    #f2f9f3,
+    #fbfdfb
+  );
+  border: 1px solid #dce9df;
+  border-radius: 20px;
+  padding: 24px;
+}
+
+.answer-header {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 17px;
+}
+
+.answer-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dceede;
+  color: #43804f;
+}
+
+.answer-header span {
+  font-size: 10px;
+  letter-spacing: 1.4px;
+  font-weight: 800;
+  color: #56805e;
+}
+
+.answer-header h2 {
+  margin: 3px 0 0;
+  font-size: 20px;
+  color: #26352a;
+}
+
+.answer-text {
+  margin: 0;
+  max-width: 1000px;
+  color: #48564c;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+
+/* =========================================
+   RECOMMENDATION CARDS
+   ========================================= */
+
+.recommendation-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 17px;
+}
+
+.recommendation-card {
+  background: #fff;
+  border: 1px solid #e3e9e4;
+  border-radius: 17px;
+  padding: 20px;
+  min-height: 170px;
+  box-shadow: 0 4px 16px rgba(40, 65, 45, 0.035);
+}
+
+.recommendation-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 16px;
+}
+
+.recommendation-top > span {
+  color: #78837a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+}
+
+.recommendation-icon {
+  width: 35px;
+  height: 35px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recommendation-icon.market {
+  background: #edf7ed;
+  color: #4b8955;
+}
+
+.recommendation-icon.buyer {
+  background: #f2eefb;
+  color: #7955a2;
+}
+
+.recommendation-icon.transport {
+  background: #fff4e8;
+  color: #b77730;
+}
+
+.recommendation-card h3 {
+  margin: 0 0 8px;
+  color: #263229;
+  font-size: 17px;
+}
+
+.recommendation-card p {
+  margin: 0 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #7a857c;
+  font-size: 12px;
+}
+
+.recommendation-value {
+  display: block;
+  color: #397c47;
+  font-size: 19px;
+}
+
+.verified-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 9px;
+  color: #4d8657;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.transport-distance {
+  display: inline-block;
+  margin-top: 8px;
+  color: #7b857d;
+  font-size: 11px;
+}
+
+
+/* =========================================
+   PRICE TREND
+   ========================================= */
+
+.trend-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 15px;
+  background: #fff;
+  border: 1px solid #e3e9e4;
+  border-radius: 17px;
+  padding: 20px;
+}
+
+.trend-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 11px;
+  background: #eef5fb;
+  color: #4e789b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.trend-card > div:last-child {
+  flex: 1;
+}
+
+.trend-card span {
+  font-size: 10px;
+  letter-spacing: 1.2px;
+  font-weight: 800;
+  color: #7b8580;
+}
+
+.trend-card h3 {
+  margin: 5px 0 6px;
+  font-size: 16px;
+  color: #29362d;
+}
+
+.trend-card p {
+  margin: 0;
+  color: #758078;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+
+/* =========================================
+   MARKET DATA
+   ========================================= */
+
+.assistant-market-card {
+  background: #fff;
+  border: 1px solid #e3e9e4;
+  border-radius: 17px;
+  padding: 21px;
+}
+
+.assistant-section-heading {
+  margin-bottom: 15px;
+}
+
+.assistant-section-heading h2 {
+  margin: 0;
+  font-size: 17px;
+  color: #29362d;
+}
+
+.assistant-section-heading p {
+  margin: 5px 0 0;
+  color: #818a83;
+  font-size: 12px;
+}
+
+.assistant-market-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.assistant-market-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 14px 0;
+  border-bottom: 1px solid #edf1ed;
+}
+
+.assistant-market-row:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.assistant-market-row:first-child {
+  padding-top: 4px;
+}
+
+.assistant-market-row div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.assistant-market-row strong {
+  color: #303c33;
+  font-size: 13px;
+}
+
+.assistant-market-row span {
+  color: #89928b;
+  font-size: 11px;
+}
+
+
+/* =========================================
+   EMPTY STATE
+   ========================================= */
+
+.assistant-empty {
+  background: #fff;
+  border: 1px solid #e3e9e4;
+  border-radius: 20px;
+  padding: 45px 25px;
+  text-align: center;
+}
+
+.assistant-empty-icon {
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 16px;
+  border-radius: 15px;
+  background: #edf7ee;
+  color: #4c8956;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.assistant-empty h2 {
+  margin: 0;
+  color: #29362d;
+  font-size: 21px;
+}
+
+.assistant-empty > p {
+  max-width: 600px;
+  margin: 9px auto 22px;
+  color: #7b857d;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.empty-features {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.empty-features div {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 12px;
+  border-radius: 9px;
+  background: #f7faf7;
+  border: 1px solid #e5ece6;
+  color: #5c7061;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+
+/* =========================================
+   RESPONSIVE
+   ========================================= */
+
+@media (max-width: 1000px) {
+
+  .recommendation-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .assistant-context {
+    grid-template-columns: 1fr 1fr;
+  }
+
+}
+
+
+@media (max-width: 700px) {
+
+  .assistant-page {
+    padding: 18px;
+  }
+
+  .assistant-header {
+    flex-direction: column;
+  }
+
+  .assistant-header h1 {
+    font-size: 28px;
+  }
+
+  .assistant-status {
+    align-self: flex-start;
+  }
+
+  .assistant-card {
+    padding: 18px;
+  }
+
+  .assistant-context {
+    grid-template-columns: 1fr;
+  }
+
+  .assistant-send-button {
+    width: 100%;
+  }
+
+  .assistant-suggestions > div {
+    flex-direction: column;
+  }
+
+  .assistant-suggestions button {
+    width: 100%;
+    text-align: left;
+  }
+
+  .answer-card {
+    padding: 18px;
+  }
+
+  .recommendation-card {
+    min-height: auto;
+  }
+
+  .trend-card {
+    padding: 17px;
+  }
+
+  .assistant-market-card {
+    padding: 17px;
+  }
+
+  .assistant-market-row {
+    align-items: flex-start;
+  }
+
+}
+
+
+@media (max-width: 450px) {
+
+  .assistant-page {
+    padding: 14px;
+  }
+
+  .assistant-header h1 {
+    font-size: 25px;
+  }
+
+  .assistant-card-heading {
+    align-items: flex-start;
+  }
+
+  .assistant-card-heading h2 {
+    font-size: 17px;
+  }
+
+  .answer-text {
+    font-size: 14px;
+  }
+
+  .assistant-market-row {
+    flex-direction: column;
+  }
+
+}

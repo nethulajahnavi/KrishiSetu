@@ -1,0 +1,657 @@
+.logistics-page {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+
+/* HEADER */
+
+.logistics-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 24px;
+}
+
+.logistics-header h1 {
+  font-size: 28px;
+  letter-spacing: -0.8px;
+  margin: 5px 0 6px;
+}
+
+.logistics-header p {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.logistics-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  padding: 8px 11px;
+
+  border: 1px solid #d9e8d9;
+  background: #f0f7f0;
+
+  color: var(--primary);
+
+  border-radius: 9px;
+
+  font-size: 9px;
+  font-weight: 700;
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+
+  border-radius: 50%;
+
+  background: #48a34d;
+}
+
+
+/* ROUTE */
+
+.route-card {
+  background: white;
+
+  border: 1px solid var(--border);
+
+  border-radius: 15px;
+
+  padding: 21px;
+
+  box-shadow: var(--shadow);
+
+  margin-bottom: 15px;
+}
+
+.route-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: 20px;
+}
+
+.route-heading h2 {
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.route-heading p {
+  font-size: 10px;
+  color: var(--muted);
+}
+
+.route-icon {
+  width: 35px;
+  height: 35px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  color: var(--primary);
+  background: #eff6ef;
+}
+
+.route-inputs {
+  display: grid;
+
+  grid-template-columns:
+    1fr
+    30px
+    1fr
+    0.75fr;
+
+  gap: 10px;
+
+  align-items: end;
+}
+
+.location-field label,
+.quantity-field label {
+  display: block;
+
+  margin-bottom: 7px;
+
+  font-size: 8px;
+
+  font-weight: 800;
+
+  letter-spacing: 0.6px;
+
+  color: #8b938b;
+}
+
+.location-input,
+.quantity-input {
+  height: 43px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 0 11px;
+
+  border: 1px solid var(--border);
+
+  border-radius: 9px;
+
+  color: #8b938b;
+}
+
+.location-input:focus-within,
+.quantity-input:focus-within {
+  border-color: #9fc69f;
+}
+
+.location-input input,
+.quantity-input input {
+  width: 100%;
+
+  border: none;
+  outline: none;
+
+  font-size: 11px;
+
+  font-weight: 600;
+}
+
+.quantity-input span {
+  color: var(--muted);
+  font-size: 9px;
+}
+
+.route-arrow {
+  width: 30px;
+  height: 43px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  color: #9ca49c;
+}
+
+
+/* SUMMARY */
+
+.logistics-summary {
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 12px;
+
+  margin-bottom: 18px;
+}
+
+.logistics-summary-card {
+  display: flex;
+
+  align-items: center;
+
+  gap: 10px;
+
+  padding: 13px;
+
+  background: white;
+
+  border: 1px solid var(--border);
+
+  border-radius: 11px;
+}
+
+.logistics-summary-icon {
+  width: 32px;
+  height: 32px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 8px;
+
+  background: #eff6ef;
+
+  color: var(--primary);
+}
+
+.logistics-summary-card span {
+  display: block;
+
+  font-size: 8px;
+
+  color: var(--muted);
+
+  margin-bottom: 3px;
+}
+
+.logistics-summary-card strong {
+  display: block;
+
+  font-size: 11px;
+}
+
+
+/* TRANSPORT */
+
+.transport-section {
+  background: white;
+
+  border: 1px solid var(--border);
+
+  border-radius: 15px;
+
+  box-shadow: var(--shadow);
+
+  overflow: hidden;
+}
+
+.section-heading {
+  display: flex;
+
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 19px 21px;
+
+  border-bottom: 1px solid #edf1ed;
+}
+
+.section-heading h2 {
+  font-size: 15px;
+
+  margin-bottom: 4px;
+}
+
+.section-heading p {
+  color: var(--muted);
+
+  font-size: 9px;
+}
+
+.option-count {
+  padding: 6px 9px;
+
+  background: #f3f6f3;
+
+  border-radius: 7px;
+
+  color: #7d857d;
+
+  font-size: 8px;
+
+  font-weight: 700;
+}
+
+
+/* TRANSPORT CARD */
+
+.transport-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.transport-card {
+  display: grid;
+
+  grid-template-columns:
+    1.3fr
+    1fr
+    0.55fr
+    30px;
+
+  align-items: center;
+
+  gap: 15px;
+
+  padding: 16px 21px;
+
+  border-bottom: 1px solid #edf1ed;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.transport-card:last-child {
+  border-bottom: none;
+}
+
+.transport-card:hover {
+  background: #fafcf9;
+}
+
+.transport-card.selected {
+  background: #f4f9f3;
+}
+
+.transport-main {
+  display: flex;
+
+  align-items: center;
+
+  gap: 11px;
+}
+
+.vehicle-icon {
+  width: 42px;
+  height: 42px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f1f5f1;
+
+  border-radius: 10px;
+
+  font-size: 21px;
+}
+
+.transport-title {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 4px;
+}
+
+.transport-name strong {
+  font-size: 11px;
+}
+
+.transport-name > span {
+  color: var(--muted);
+
+  font-size: 9px;
+}
+
+.recommended-badge {
+  padding: 3px 6px;
+
+  background: #e6f3e4;
+
+  color: #438249;
+
+  border-radius: 5px;
+
+  font-size: 7px;
+
+  font-weight: 800;
+}
+
+.transport-detail {
+  display: flex;
+
+  gap: 13px;
+}
+
+.transport-detail span {
+  display: flex;
+
+  align-items: center;
+
+  gap: 4px;
+
+  color: #858d85;
+
+  font-size: 8px;
+}
+
+.transport-price {
+  text-align: right;
+}
+
+.transport-price strong {
+  display: block;
+
+  font-size: 14px;
+
+  color: #254e2a;
+}
+
+.transport-price span {
+  font-size: 8px;
+
+  color: var(--muted);
+}
+
+.transport-select {
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+}
+
+.select-circle {
+  width: 18px;
+  height: 18px;
+
+  border: 1.5px solid #c5cec5;
+
+  border-radius: 50%;
+}
+
+.selected-check {
+  color: var(--primary);
+}
+
+
+/* RECOMMENDATION */
+
+.logistics-recommendation {
+  display: flex;
+
+  align-items: center;
+
+  gap: 12px;
+
+  margin-top: 15px;
+
+  padding: 16px;
+
+  background: #f1f7ef;
+
+  border: 1px solid #dce9d9;
+
+  border-radius: 13px;
+}
+
+.recommendation-symbol {
+  width: 37px;
+  height: 37px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  background: white;
+
+  border-radius: 9px;
+
+  font-size: 18px;
+}
+
+.logistics-recommendation-text {
+  flex: 1;
+}
+
+.logistics-recommendation-text > span {
+  font-size: 8px;
+
+  font-weight: 800;
+
+  color: #6e8b70;
+
+  letter-spacing: 0.7px;
+}
+
+.logistics-recommendation-text h3 {
+  font-size: 11px;
+
+  margin: 3px 0;
+}
+
+.logistics-recommendation-text p {
+  color: #758075;
+
+  font-size: 9px;
+}
+
+.confirm-transport {
+  display: flex;
+
+  align-items: center;
+
+  gap: 6px;
+
+  padding: 9px 12px;
+
+  border: none;
+
+  border-radius: 8px;
+
+  background: var(--primary);
+
+  color: white;
+
+  font-size: 9px;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+
+/* INFO */
+
+.route-info-card {
+  display: flex;
+
+  align-items: flex-start;
+
+  gap: 11px;
+
+  margin-top: 15px;
+
+  padding: 15px;
+
+  background: white;
+
+  border: 1px solid var(--border);
+
+  border-radius: 12px;
+}
+
+.route-info-icon {
+  width: 33px;
+  height: 33px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #eef4ff;
+
+  color: #5577ad;
+
+  border-radius: 8px;
+}
+
+.route-info-card h3 {
+  font-size: 10px;
+
+  margin-bottom: 4px;
+}
+
+.route-info-card p {
+  color: var(--muted);
+
+  font-size: 9px;
+
+  line-height: 1.5;
+}
+
+
+/* FOOTER */
+
+.logistics-footer {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 14px;
+
+  padding: 10px 13px;
+
+  background: #f1f5f1;
+
+  border-radius: 8px;
+
+  color: #7a827a;
+
+  font-size: 8px;
+}
+
+
+/* RESPONSIVE */
+
+@media (max-width: 900px) {
+
+  .route-inputs {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .route-arrow {
+    display: none;
+  }
+
+  .transport-card {
+    grid-template-columns: 1fr 1fr 0.5fr 30px;
+  }
+
+}
+
+@media (max-width: 650px) {
+
+  .logistics-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .route-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .logistics-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .transport-card {
+    grid-template-columns: 1fr 30px;
+  }
+
+  .transport-detail {
+    display: none;
+  }
+
+  .transport-price {
+    text-align: left;
+  }
+
+}
