@@ -5,16 +5,13 @@ const API_BASE_URL = "http://127.0.0.1:8000/api";
 ========================================================= */
 
 export async function apiRequest(endpoint, options = {}) {
-  const response = await fetch(
-    `${API_BASE_URL}${endpoint}`,
-    {
-      headers: {
-        "Content-Type": "application/json",
-        ...(options.headers || {}),
-      },
-      ...options,
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+    headers: {
+      "Content-Type": "application/json",
+      ...(options.headers || {}),
+    },
+    ...options,
+  });
 
   const data = await response.json().catch(() => null);
 
@@ -31,11 +28,117 @@ export async function apiRequest(endpoint, options = {}) {
 
 
 /* =========================================================
+   AUTHENTICATION
+========================================================= */
+
+export function registerUser(userData) {
+  return apiRequest("/auth/register", {
+    method: "POST",
+    body: JSON.stringify(userData),
+  });
+}
+
+
+export async function loginUser(email, password) {
+  const body = new URLSearchParams();
+
+  body.append("username", email);
+  body.append("password", password);
+
+  const response = await fetch(
+    `${API_BASE_URL}/auth/login`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body,
+    }
+  );
+
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(
+      data?.detail ||
+        data?.message ||
+        `Login failed: ${response.status}`
+    );
+  }
+
+  return data;
+}
+
+
+/* =========================================================
+   AUTHENTICATED REQUEST
+========================================================= */
+
+export function authenticatedRequest(endpoint, options = {}) {
+  const token = localStorage.getItem("krishisetu_token");
+
+  return apiRequest(endpoint, {
+    ...options,
+    headers: {
+      ...(options.headers || {}),
+      ...(token
+        ? {
+            Authorization: `Bearer ${token}`,
+          }
+        : {}),
+    },
+  });
+}
+
+
+/* =========================================================
+   CURRENT USER
+========================================================= */
+
+export function getCurrentUser() {
+  return authenticatedRequest("/users/me");
+}
+
+
+/* =========================================================
    MARKET PRICES
 ========================================================= */
 
-export function getMarketPrices() {
-  return apiRequest("/market-prices");
+export function getMarketPrices(params = {}) {
+  const query = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      query.append(key, value);
+    }
+  });
+
+  const queryString = query.toString();
+
+  return authenticatedRequest(
+    `/market-prices${queryString ? `?${queryString}` : ""}`
+  );
+}
+
+
+/* =========================================================
+   PRICE HISTORY — API v1
+========================================================= */
+
+export function getPriceHistory(params = {}) {
+  const query = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      query.append(key, value);
+    }
+  });
+
+  const queryString = query.toString();
+
+  return authenticatedRequest(
+    `/v1/price-history${queryString ? `?${queryString}` : ""}`
+  );
 }
 
 
@@ -48,7 +151,7 @@ export function getNetRealisation(
   origin,
   quantity
 ) {
-  return apiRequest(
+  return authenticatedRequest(
     `/net-realisation?commodity=${encodeURIComponent(
       commodity
     )}&origin=${encodeURIComponent(
@@ -62,8 +165,20 @@ export function getNetRealisation(
    LOGISTICS
 ========================================================= */
 
-export function getLogistics() {
-  return apiRequest("/logistics");
+export function getLogistics(params = {}) {
+  const query = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      query.append(key, value);
+    }
+  });
+
+  const queryString = query.toString();
+
+  return authenticatedRequest(
+    `/logistics${queryString ? `?${queryString}` : ""}`
+  );
 }
 
 
@@ -72,7 +187,7 @@ export function getLogistics() {
 ========================================================= */
 
 export function getBuyers() {
-  return apiRequest("/buyers");
+  return authenticatedRequest("/buyers");
 }
 
 
@@ -81,7 +196,7 @@ export function getBuyers() {
 ========================================================= */
 
 export function getBuyerMatching() {
-  return apiRequest("/buyer-matching");
+  return authenticatedRequest("/buyer-matching");
 }
 
 
@@ -90,7 +205,7 @@ export function getBuyerMatching() {
 ========================================================= */
 
 export function getWeather() {
-  return apiRequest("/weather");
+  return authenticatedRequest("/weather");
 }
 
 
@@ -99,5 +214,5 @@ export function getWeather() {
 ========================================================= */
 
 export function getFarmerProfile() {
-  return apiRequest("/farmer-profile");
+  return authenticatedRequest("/farmer-profile");
 }

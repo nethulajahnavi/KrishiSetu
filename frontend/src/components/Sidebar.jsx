@@ -1,13 +1,11 @@
+import { useEffect, useState } from "react";
 import {
   BarChart3,
   Bot,
-  ChevronLeft,
-  ChevronRight,
   CloudSun,
   Handshake,
   LayoutDashboard,
   LogOut,
-  Menu,
   Settings,
   ShoppingBasket,
   Truck,
@@ -15,11 +13,46 @@ import {
   X,
 } from "lucide-react";
 
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import "./Sidebar.css";
 
 function Sidebar({ mobileOpen, setMobileOpen }) {
+  const navigate = useNavigate();
+
+  const [user, setUser] = useState(null);
+
+  // Load logged-in user
+  useEffect(() => {
+    function loadUser() {
+      try {
+        const storedUser = localStorage.getItem("user");
+
+        if (storedUser) {
+          setUser(JSON.parse(storedUser));
+        } else {
+          setUser(null);
+        }
+      } catch (error) {
+        console.error(
+          "Error reading logged-in user:",
+          error
+        );
+
+        setUser(null);
+      }
+    }
+
+    loadUser();
+
+    window.addEventListener("storage", loadUser);
+
+    return () => {
+      window.removeEventListener("storage", loadUser);
+    };
+  }, []);
+
+  // Main menu
   const menuItems = [
     {
       label: "Dashboard",
@@ -58,19 +91,73 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
     },
   ];
 
+  // User information
+  const userName =
+    user?.name ||
+    user?.full_name ||
+    user?.username ||
+    "Farmer";
+
+  const userRole =
+    user?.role ||
+    "Farmer";
+
+  const avatarLetter =
+    userName.trim().charAt(0).toUpperCase() || "F";
+
+  // Close mobile sidebar
+  const closeMobileSidebar = () => {
+    if (setMobileOpen) {
+      setMobileOpen(false);
+    }
+  };
+
+  // SETTINGS
+  const handleSettings = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    closeMobileSidebar();
+
+    navigate("/dashboard/settings");
+  };
+
+  // LOGOUT
+  const handleLogout = (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    // Remove authentication information
+    localStorage.removeItem("krishisetu_token");
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    localStorage.removeItem("rememberMe");
+    localStorage.removeItem("selectedRole");
+
+    setUser(null);
+
+    closeMobileSidebar();
+
+    navigate("/login", {
+      replace: true,
+    });
+  };
+
   return (
     <>
       {/* Mobile overlay */}
       {mobileOpen && (
         <div
           className="sidebar-overlay"
-          onClick={() => setMobileOpen(false)}
+          onClick={closeMobileSidebar}
         />
       )}
 
       <aside
         className={`sidebar ${
-          mobileOpen ? "sidebar-mobile-open" : ""
+          mobileOpen
+            ? "sidebar-mobile-open"
+            : ""
         }`}
       >
 
@@ -83,12 +170,17 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
 
           <div className="sidebar-brand">
             <strong>KrishiSetu</strong>
-            <span>Smart Agriculture</span>
+
+            <span>
+              Smart Agriculture
+            </span>
           </div>
 
           <button
+            type="button"
             className="sidebar-close"
-            onClick={() => setMobileOpen(false)}
+            onClick={closeMobileSidebar}
+            aria-label="Close menu"
           >
             <X size={21} />
           </button>
@@ -106,29 +198,33 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
           <nav className="sidebar-nav">
 
             {menuItems.map((item) => {
-
               const Icon = item.icon;
 
               return (
                 <NavLink
                   key={item.path}
                   to={item.path}
-                  end={item.path === "/dashboard"}
-                  onClick={() => setMobileOpen(false)}
+                  end={
+                    item.path === "/dashboard"
+                  }
+                  onClick={
+                    closeMobileSidebar
+                  }
                   className={({ isActive }) =>
                     `sidebar-link ${
-                      isActive ? "active" : ""
+                      isActive
+                        ? "active"
+                        : ""
                     }`
                   }
                 >
-
                   <Icon size={19} />
 
-                  <span>{item.label}</span>
-
+                  <span>
+                    {item.label}
+                  </span>
                 </NavLink>
               );
-
             })}
 
           </nav>
@@ -136,49 +232,83 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
         </div>
 
 
-        {/* Bottom */}
+        {/* Account */}
         <div className="sidebar-bottom">
 
           <span className="sidebar-title">
             ACCOUNT
           </span>
 
+
+          {/* Profile */}
           <NavLink
             to="/dashboard/profile"
-            onClick={() => setMobileOpen(false)}
+            onClick={
+              closeMobileSidebar
+            }
             className={({ isActive }) =>
               `sidebar-link ${
-                isActive ? "active" : ""
+                isActive
+                  ? "active"
+                  : ""
               }`
             }
           >
             <User size={19} />
-            <span>Profile</span>
+
+            <span>
+              Profile
+            </span>
           </NavLink>
 
-          <button className="sidebar-link sidebar-button">
+
+          {/* Settings */}
+          <button
+            type="button"
+            className="sidebar-link sidebar-button"
+            onClick={handleSettings}
+          >
             <Settings size={19} />
-            <span>Settings</span>
+
+            <span>
+              Settings
+            </span>
           </button>
 
-          <button className="sidebar-link sidebar-button logout">
+
+          {/* Logout */}
+          <button
+            type="button"
+            className="sidebar-link sidebar-button logout"
+            onClick={handleLogout}
+          >
             <LogOut size={19} />
-            <span>Logout</span>
+
+            <span>
+              Logout
+            </span>
           </button>
 
         </div>
 
 
-        {/* Farmer mini profile */}
+        {/* Logged-in user */}
         <div className="sidebar-profile">
 
           <div className="profile-avatar">
-            R
+            {avatarLetter}
           </div>
 
           <div className="profile-info">
-            <strong>Ramesh Kumar</strong>
-            <span>Farmer</span>
+
+            <strong>
+              {userName}
+            </strong>
+
+            <span>
+              {userRole}
+            </span>
+
           </div>
 
         </div>

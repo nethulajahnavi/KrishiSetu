@@ -1,290 +1,2129 @@
-.login-page {
-  min-height: 100vh;
-  display: grid;
-  grid-template-columns: 1.05fr 0.95fr;
-  background: #ffffff;
+/* =========================================================
+   KRISHISETU LOGIN
+   LAPTOP OPTIMIZED
+   Target: 1366x768 / 1536x864
+   ========================================================= */
+
+* {
+  box-sizing: border-box;
 }
 
-/* LEFT SIDE */
+html,
+body,
+#root {
+  margin: 0;
+  width: 100%;
+  min-height: 100%;
+}
 
-.login-hero {
+body {
+  font-family:
+    Inter,
+    "Segoe UI",
+    Arial,
+    sans-serif;
+}
+
+
+/* =========================================================
+   MAIN PAGE
+   ========================================================= */
+
+.login-page {
+  --primary: #2e7d32;
+
+  width: 100%;
+  height: 100vh;
+  min-height: 650px;
+
+  display: grid;
+  grid-template-columns: 48% 52%;
+
+  overflow: hidden;
+
+  background: #f5f2e7;
+
+  transition:
+    background 0.6s ease;
+}
+
+
+/* =========================================================
+   ROLE COLORS
+   ========================================================= */
+
+.role-farmer {
+  --primary: #2e7d32;
+
+  --left-start: #164d21;
+  --left-mid: #24742f;
+  --left-end: #4d8b3f;
+
+  --glow: rgba(104, 190, 95, 0.35);
+  --light: #e6f4e3;
+}
+
+.role-admin {
+  --primary: #1565c0;
+
+  --left-start: #071c3b;
+  --left-mid: #0d356b;
+  --left-end: #155b93;
+
+  --glow: rgba(55, 125, 210, 0.38);
+  --light: #e5effb;
+}
+
+.role-buyer {
+  --primary: #fb8c00;
+
+  --left-start: #783b05;
+  --left-mid: #b35d08;
+  --left-end: #df8b20;
+
+  --glow: rgba(255, 182, 71, 0.4);
+  --light: #fff0dc;
+}
+
+.role-transporter {
+  --primary: #7b1fa2;
+
+  --left-start: #321047;
+  --left-mid: #57216f;
+  --left-end: #7b3c91;
+
+  --glow: rgba(177, 103, 209, 0.4);
+  --light: #f1e7f6;
+}
+
+
+/* =========================================================
+   LEFT SIDE
+   ========================================================= */
+
+.login-left {
   position: relative;
-  min-height: 100vh;
+
+  height: 100vh;
+  min-height: 650px;
+
+  overflow: hidden;
+
+  color: white;
+
   background:
     linear-gradient(
       135deg,
-      rgba(22, 80, 30, 0.94),
-      rgba(46, 125, 50, 0.88)
-    ),
-    url("https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&w=1400&q=80")
-      center / cover;
-  color: white;
+      var(--left-start),
+      var(--left-mid) 55%,
+      var(--left-end)
+    );
+
+  transition:
+    background 0.7s ease;
 }
 
-.hero-overlay {
-  min-height: 100vh;
-  padding: 40px 60px;
+
+/* =========================================================
+   BACKGROUND EFFECTS
+   ========================================================= */
+
+.background-effects {
+  position: absolute;
+  inset: 0;
+
+  overflow: hidden;
+
+  pointer-events: none;
+}
+
+.glow {
+  position: absolute;
+
+  border-radius: 50%;
+
+  filter: blur(5px);
+
+  background: var(--glow);
+
+  transition:
+    background 0.7s ease;
+}
+
+.glow-one {
+  width: 380px;
+  height: 380px;
+
+  top: -190px;
+  right: -140px;
+
+  animation:
+    floatGlow 12s ease-in-out infinite;
+}
+
+.glow-two {
+  width: 280px;
+  height: 280px;
+
+  left: -150px;
+  bottom: -160px;
+
+  animation:
+    floatGlowTwo 15s ease-in-out infinite;
+}
+
+.glow-three {
+  width: 150px;
+  height: 150px;
+
+  right: 12%;
+  bottom: 12%;
+
+  opacity: 0.18;
+
+  animation:
+    pulseGlow 8s ease-in-out infinite;
+}
+
+
+@keyframes floatGlow {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform:
+      translate(-30px, 35px)
+      scale(1.1);
+  }
+}
+
+
+@keyframes floatGlowTwo {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform:
+      translate(30px, -30px)
+      scale(1.08);
+  }
+}
+
+
+@keyframes pulseGlow {
+  0%,
+  100% {
+    transform: scale(0.85);
+    opacity: 0.1;
+  }
+
+  50% {
+    transform: scale(1.2);
+    opacity: 0.25;
+  }
+}
+
+
+/* =========================================================
+   GRID
+   ========================================================= */
+
+.grid-overlay {
+  position: absolute;
+  inset: 0;
+
+  opacity: 0.045;
+
+  background-image:
+    linear-gradient(
+      rgba(255, 255, 255, 0.7) 1px,
+      transparent 1px
+    ),
+    linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0.7) 1px,
+      transparent 1px
+    );
+
+  background-size: 50px 50px;
+
+  mask-image:
+    linear-gradient(
+      to bottom,
+      black,
+      transparent 85%
+    );
+}
+
+
+/* =========================================================
+   FLOATING PARTICLES
+   ========================================================= */
+
+.floating-dot {
+  position: absolute;
+
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.28);
+
+  animation:
+    particleFloat 8s ease-in-out infinite;
+}
+
+.dot-one {
+  left: 14%;
+  top: 25%;
+}
+
+.dot-two {
+  left: 52%;
+  top: 16%;
+
+  animation-delay: 2s;
+}
+
+.dot-three {
+  right: 17%;
+  top: 47%;
+
+  animation-delay: 4s;
+}
+
+.dot-four {
+  left: 32%;
+  bottom: 18%;
+
+  animation-delay: 1s;
+}
+
+
+@keyframes particleFloat {
+  0%,
+  100% {
+    transform:
+      translateY(0)
+      scale(1);
+
+    opacity: 0.2;
+  }
+
+  50% {
+    transform:
+      translateY(-20px)
+      scale(1.5);
+
+    opacity: 0.6;
+  }
+}
+
+
+/* =========================================================
+   DECORATIVE RINGS
+   ========================================================= */
+
+.decor-ring {
+  position: absolute;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.09);
+
+  border-radius: 50%;
+
+  transform: rotate(-25deg);
+}
+
+.ring-one {
+  width: 360px;
+  height: 140px;
+
+  right: -180px;
+  top: 13%;
+}
+
+.ring-two {
+  width: 280px;
+  height: 110px;
+
+  left: -150px;
+  bottom: 20%;
+}
+
+
+/* =========================================================
+   LEFT CONTENT
+   ========================================================= */
+
+.left-content {
+  position: relative;
+  z-index: 5;
+
+  width: 82%;
+  max-width: 690px;
+
+  height: 100%;
+
+  margin: auto;
+
   display: flex;
   flex-direction: column;
+
+  justify-content: center;
+
+  padding:
+    35px 0;
+
+  animation:
+    leftAppear 0.7s ease both;
 }
+
+
+@keyframes leftAppear {
+  from {
+    opacity: 0;
+    transform: translateX(-15px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+
+/* =========================================================
+   BRAND
+   ========================================================= */
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-size: 25px;
-  font-weight: 800;
+
+  gap: 13px;
+
+  margin-bottom: 42px;
 }
 
-.brand-icon {
-  width: 44px;
+.brand-logo {
+  width: 54px;
+  height: 54px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 16px;
+
+  color: var(--primary);
+
+  background: white;
+
+  box-shadow:
+    0 12px 30px
+    rgba(0, 0, 0, 0.16);
+
+  transition:
+    transform 0.3s ease,
+    color 0.5s ease;
+}
+
+.brand-logo:hover {
+  transform:
+    rotate(-5deg)
+    scale(1.04);
+}
+
+.brand h2 {
+  margin: 0;
+
+  color: white;
+
+  font-size: 30px;
+  line-height: 1;
+
+  font-weight: 900;
+
+  letter-spacing: -1.2px;
+}
+
+.brand h2 span {
+  opacity: 0.78;
+}
+
+.brand p {
+  margin:
+    6px 0 0;
+
+  color:
+    rgba(255, 255, 255, 0.7);
+
+  font-size: 9px;
+
+  font-weight: 600;
+}
+
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.hero {
+  animation:
+    roleChange 0.5s ease both;
+}
+
+.hero-eyebrow {
+  margin-bottom: 14px;
+
+  color:
+    rgba(255, 255, 255, 0.68);
+
+  font-size: 9px;
+
+  font-weight: 850;
+
+  letter-spacing: 1.8px;
+}
+
+.hero h1 {
+  margin: 0;
+
+  color: white;
+
+  font-size:
+    clamp(
+      43px,
+      4vw,
+      61px
+    );
+
+  line-height: 1.02;
+
+  font-weight: 900;
+
+  letter-spacing: -3px;
+}
+
+.hero h1 span {
+  position: relative;
+
+  color: var(--light);
+
+  transition:
+    color 0.6s ease;
+}
+
+.hero h1 span::after {
+  content: "";
+
+  position: absolute;
+
+  left: 0;
+  bottom: -6px;
+
+  width: 100%;
+  height: 3px;
+
+  border-radius: 5px;
+
+  background: var(--light);
+
+  opacity: 0.5;
+}
+
+.hero p {
+  max-width: 600px;
+
+  margin:
+    21px 0 0;
+
+  color:
+    rgba(255, 255, 255, 0.78);
+
+  font-size: 12px;
+
+  line-height: 1.65;
+}
+
+
+@keyframes roleChange {
+  from {
+    opacity: 0;
+    transform:
+      translateY(12px);
+  }
+
+  to {
+    opacity: 1;
+    transform:
+      translateY(0);
+  }
+}
+
+
+/* =========================================================
+   ROLE HIGHLIGHT
+   ========================================================= */
+
+.role-highlight {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  margin-top: 22px;
+
+  padding:
+    12px 14px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.17);
+
+  border-radius: 14px;
+
+  background:
+    rgba(255, 255, 255, 0.09);
+
+  backdrop-filter:
+    blur(14px);
+
+  animation:
+    roleChange 0.45s ease both;
+}
+
+.role-highlight-icon {
+  min-width: 44px;
   height: 44px;
+
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 13px;
-  background: rgba(255, 255, 255, 0.17);
-  backdrop-filter: blur(10px);
+
+  border-radius: 12px;
+
+  color: var(--primary);
+
+  background: white;
+
+  transition:
+    color 0.6s ease;
 }
 
-.hero-content {
-  max-width: 650px;
-  margin: auto 0;
+.role-highlight-content {
+  flex: 1;
 }
 
-.hero-badge {
-  display: inline-flex;
+.role-highlight-content small {
+  display: block;
+
+  margin-bottom: 2px;
+
+  color:
+    rgba(255, 255, 255, 0.5);
+
+  font-size: 7px;
+
+  font-weight: 850;
+
+  letter-spacing: 1.2px;
+}
+
+.role-highlight-content strong {
+  display: block;
+
+  color: white;
+
+  font-size: 11px;
+
+  font-weight: 850;
+}
+
+.role-highlight-content p {
+  margin:
+    3px 0 0;
+
+  color:
+    rgba(255, 255, 255, 0.62);
+
+  font-size: 7.5px;
+
+  line-height: 1.35;
+}
+
+.active-indicator {
+  display: flex;
   align-items: center;
-  gap: 7px;
-  padding: 9px 14px;
-  border-radius: 30px;
-  background: rgba(255, 255, 255, 0.13);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  font-size: 13px;
-  margin-bottom: 25px;
+
+  gap: 5px;
+
+  align-self: flex-start;
+
+  padding-top: 3px;
+
+  color:
+    rgba(255, 255, 255, 0.48);
+
+  font-size: 7px;
+
+  text-transform: uppercase;
 }
 
-.hero-content h1 {
-  font-size: clamp(45px, 5vw, 72px);
-  line-height: 1.03;
-  letter-spacing: -2px;
-  margin-bottom: 25px;
+.active-indicator span {
+  width: 5px;
+  height: 5px;
+
+  border-radius: 50%;
+
+  background: #9be28e;
+
+  box-shadow:
+    0 0 8px
+    rgba(155, 226, 142, 0.8);
 }
 
-.hero-content h1 span {
-  color: #ffe28a;
+
+/* =========================================================
+   FEATURE CARDS
+   ========================================================= */
+
+.feature-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, 1fr);
+
+  gap: 9px;
+
+  margin-top: 17px;
 }
 
-.hero-content p {
-  max-width: 550px;
-  font-size: 18px;
-  line-height: 1.7;
-  color: rgba(255, 255, 255, 0.86);
-}
+.feature-card {
+  min-height: 58px;
 
-.hero-features {
   display: flex;
-  gap: 35px;
-  margin-top: 40px;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 8px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.12);
+
+  border-radius: 12px;
+
+  background:
+    rgba(255, 255, 255, 0.07);
+
+  backdrop-filter:
+    blur(9px);
+
+  transition:
+    transform 0.25s ease,
+    background 0.25s ease;
 }
 
-.hero-features div {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
+.feature-card:hover {
+  transform:
+    translateY(-3px);
+
+  background:
+    rgba(255, 255, 255, 0.12);
 }
 
-.hero-features strong {
-  font-size: 22px;
-}
+.feature-icon {
+  min-width: 32px;
+  height: 32px;
 
-.hero-features span {
-  font-size: 13px;
-  color: rgba(255, 255, 255, 0.75);
-}
-
-.hero-footer {
-  margin-top: auto;
-  font-size: 13px !important;
-  color: rgba(255, 255, 255, 0.6) !important;
-}
-
-/* LOGIN */
-
-.login-section {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 50px;
+
+  border-radius: 9px;
 }
+
+.feature-green {
+  color: #2e7d32;
+  background: #e2f2df;
+}
+
+.feature-blue {
+  color: #1565c0;
+  background: #e1ebfa;
+}
+
+.feature-orange {
+  color: #d27600;
+  background: #fff0cf;
+}
+
+.feature-card strong {
+  display: block;
+
+  color: white;
+
+  font-size: 8.5px;
+
+  font-weight: 850;
+}
+
+.feature-card span {
+  display: block;
+
+  margin-top: 2px;
+
+  color:
+    rgba(255, 255, 255, 0.58);
+
+  font-size: 7px;
+
+  line-height: 1.25;
+}
+
+
+/* =========================================================
+   LEFT BOTTOM
+   ========================================================= */
+
+.left-bottom {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  margin-top: 17px;
+
+  color:
+    rgba(255, 255, 255, 0.62);
+
+  font-size: 7.5px;
+}
+
+.check-circle {
+  width: 21px;
+  height: 21px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background:
+    rgba(255, 255, 255, 0.11);
+}
+
+
+/* =========================================================
+   RIGHT SIDE
+   ========================================================= */
+
+.login-right {
+  position: relative;
+
+  height: 100vh;
+  min-height: 650px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    25px 30px;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(
+      circle at 90% 5%,
+      color-mix(
+        in srgb,
+        var(--primary) 11%,
+        transparent
+      ),
+      transparent 30%
+    ),
+    #f5f2e7;
+
+  transition:
+    background 0.6s ease;
+}
+
+
+/* =========================================================
+   LOGIN CARD
+   ========================================================= */
 
 .login-card {
-  width: 100%;
-  max-width: 440px;
+  position: relative;
+
+  width: min(
+    520px,
+    100%
+  );
+
+  overflow: visible;
+  padding:
+    27px 30px 22px;
+
+  border:
+    1px solid
+    rgba(255, 255, 255, 0.9);
+
+  border-radius: 23px;
+
+  background:
+    rgba(255, 255, 255, 0.98);
+
+  box-shadow:
+    0 25px 65px
+    rgba(38, 50, 56, 0.14);
+
+  animation:
+    cardAppear 0.5s ease both;
 }
 
-.mobile-brand {
-  display: none;
+@keyframes cardAppear {
+  from {
+    opacity: 0;
+
+    transform:
+      translateY(10px)
+      scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+
+    transform:
+      translateY(0)
+      scale(1);
+  }
 }
 
-.login-header {
-  margin-bottom: 35px;
+.card-accent {
+  position: absolute;
+
+  top: 0;
+  left: 12%;
+
+  width: 76%;
+  height: 3px;
+
+  border-radius:
+    0 0 8px 8px;
+
+  background:
+    var(--primary);
+
+  transition:
+    background 0.5s ease;
+}
+
+
+/* =========================================================
+   MINI LOGO
+   ========================================================= */
+
+.mini-logo {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 9px;
+
+  border-radius: 10px;
+
+  color:
+    var(--primary);
+
+  background:
+    var(--light);
+
+  transition:
+    color 0.5s ease,
+    background 0.5s ease;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.welcome {
+  margin-bottom: 4px;
+
+  color:
+    var(--primary);
+
+  font-size: 8px;
+
+  font-weight: 850;
+
+  letter-spacing: 1.4px;
 }
 
 .login-header h2 {
-  font-size: 32px;
-  margin-bottom: 9px;
+  margin: 0;
+
+  color: #263238;
+
+  font-size: 24px;
+
+  font-weight: 850;
+
   letter-spacing: -0.8px;
 }
 
+.login-header h2 span {
+  color:
+    var(--primary);
+
+  transition:
+    color 0.5s ease;
+}
+
 .login-header p {
-  color: var(--muted);
-  font-size: 15px;
+  margin:
+    6px 0 16px;
+
+  color: #718087;
+
+  font-size: 9px;
+
+  line-height: 1.45;
 }
 
-.input-group {
-  margin-bottom: 22px;
+
+/* =========================================================
+   ROLE SECTION
+   ========================================================= */
+
+.section-label {
+  margin-bottom: 7px;
+
+  color: #263238;
+
+  font-size: 8.5px;
+
+  font-weight: 800;
 }
 
-.input-group label {
-  display: block;
-  font-size: 14px;
-  font-weight: 600;
-  margin-bottom: 9px;
+.role-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 7px;
+
+  margin-bottom: 15px;
 }
 
-.input-wrapper {
-  height: 52px;
+.role-card {
+  position: relative;
+
+  min-height: 78px;
+
+  display: flex;
+
+  flex-direction: column;
+
+  align-items: center;
+  justify-content: center;
+
+  padding: 6px;
+
+  border:
+    1.2px solid
+    #e1e7e9;
+
+  border-radius: 11px;
+
+  background: white;
+
+  cursor: pointer;
+
+  font-family: inherit;
+
+  transition:
+    transform 0.2s ease,
+    border-color 0.25s ease,
+    box-shadow 0.25s ease,
+    background 0.25s ease;
+}
+
+.role-card:hover {
+  transform:
+    translateY(-2px);
+
+  box-shadow:
+    0 7px 18px
+    rgba(38, 50, 56, 0.08);
+}
+
+.role-card.selected {
+  border-color:
+    var(--primary);
+
+  background:
+    var(--light);
+
+  box-shadow:
+    0 7px 20px
+    color-mix(
+      in srgb,
+      var(--primary) 12%,
+      transparent
+    );
+}
+
+.role-card-icon {
+  width: 30px;
+  height: 30px;
+
   display: flex;
   align-items: center;
+  justify-content: center;
+
+  margin-bottom: 4px;
+
+  border-radius: 8px;
+
+  color:
+    var(--primary);
+
+  background:
+    var(--light);
+
+  transition:
+    color 0.5s ease,
+    background 0.5s ease,
+    transform 0.25s ease;
+}
+
+.role-card:hover .role-card-icon {
+  transform:
+    scale(1.08);
+}
+
+.role-card strong {
+  color: #263238;
+
+  font-size: 8.5px;
+
+  font-weight: 850;
+}
+
+.role-card > span {
+  max-width: 90px;
+
+  margin-top: 2px;
+
+  color: #819096;
+
+  font-size: 6px;
+
+  line-height: 1.25;
+
+  text-align: center;
+}
+
+.selected-check {
+  position: absolute;
+
+  top: 4px;
+  right: 4px;
+
+  width: 14px;
+  height: 14px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  color: white;
+
+  background:
+    var(--primary);
+
+  animation:
+    popIn 0.2s ease both;
+}
+
+@keyframes popIn {
+  from {
+    transform: scale(0);
+  }
+
+  to {
+    transform: scale(1);
+  }
+}
+
+
+/* =========================================================
+   FORM
+   ========================================================= */
+
+.login-form {
+  display: flex;
+
+  flex-direction: column;
+
   gap: 11px;
-  padding: 0 15px;
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  background: #fbfdfb;
 }
 
-.input-wrapper:focus-within {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.09);
+.form-field label {
+  display: block;
+
+  margin-bottom: 5px;
+
+  color: #263238;
+
+  font-size: 8px;
+
+  font-weight: 800;
 }
 
-.input-wrapper svg {
-  color: #7d887d;
+.input-box {
+  position: relative;
+
+  display: flex;
+  align-items: center;
 }
 
-.input-wrapper input {
-  flex: 1;
-  min-width: 0;
-  border: none;
+.input-box > svg {
+  position: absolute;
+
+  left: 12px;
+
+  color: #91a0a6;
+
+  pointer-events: none;
+}
+
+.input-box input {
+  width: 100%;
+
+  height: 40px;
+
+  padding:
+    0 37px;
+
+  border:
+    1.2px solid
+    #dfe6e8;
+
+  border-radius: 9px;
+
   outline: none;
-  background: transparent;
-  color: var(--text);
+
+  color: #263238;
+
+  background: #fbfcfc;
+
+  font-family: inherit;
+
+  font-size: 9px;
+
+  transition:
+    border-color 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-.input-wrapper input::placeholder {
-  color: #9ba49b;
+.input-box input:focus {
+  border-color:
+    var(--primary);
+
+  box-shadow:
+    0 0 0 3px
+    color-mix(
+      in srgb,
+      var(--primary) 11%,
+      transparent
+    );
 }
 
-.password-label {
-  display: flex !important;
-  justify-content: space-between;
-}
+.eye-button {
+  position: absolute;
 
-.password-label button,
-.login-options button {
+  right: 5px;
+
+  width: 28px;
+  height: 28px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
   border: none;
+
+  border-radius: 7px;
+
+  color: #829097;
+
   background: transparent;
-  color: var(--primary);
-  font-size: 13px;
-  font-weight: 600;
+
+  cursor: pointer;
 }
 
-.login-options {
+.eye-button:hover {
+  color:
+    var(--primary);
+
+  background:
+    var(--light);
+}
+
+
+/* =========================================================
+   OPTIONS
+   ========================================================= */
+
+.form-options {
   display: flex;
+
+  align-items: center;
+
   justify-content: space-between;
-  align-items: center;
-  margin: 5px 0 25px;
 }
 
-.login-options label {
+.remember {
   display: flex;
-  gap: 8px;
+
   align-items: center;
-  font-size: 13px;
-  color: var(--muted);
+
+  gap: 5px;
+
+  color: #77868b;
+
+  font-size: 7.5px;
+
+  cursor: pointer;
 }
 
-.login-options input {
-  accent-color: var(--primary);
+.remember input {
+  display: none;
 }
+
+.checkbox {
+  width: 14px;
+  height: 14px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border:
+    1px solid
+    #bdc8cc;
+
+  border-radius: 4px;
+
+  color: white;
+
+  background: white;
+}
+
+.remember input:checked
+  + .checkbox {
+  border-color:
+    var(--primary);
+
+  background:
+    var(--primary);
+}
+
+.forgot {
+  border: none;
+
+  padding: 0;
+
+  color:
+    #1565c0;
+
+  background: transparent;
+
+  font-family: inherit;
+
+  font-size: 7.5px;
+
+  font-weight: 750;
+
+  cursor: pointer;
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
 
 .login-button {
   width: 100%;
-  height: 53px;
-  border: none;
-  border-radius: 12px;
-  background: var(--primary);
-  color: white;
+
+  height: 42px;
+
   display: flex;
-  justify-content: center;
+
   align-items: center;
-  gap: 9px;
-  font-weight: 700;
-  font-size: 15px;
-  box-shadow: 0 8px 20px rgba(46, 125, 50, 0.18);
+  justify-content: center;
+
+  gap: 7px;
+
+  border: none;
+
+  border-radius: 9px;
+
+  color: white;
+
+  background:
+    var(--primary);
+
+  font-family: inherit;
+
+  font-size: 9px;
+
+  font-weight: 850;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 8px 20px
+    color-mix(
+      in srgb,
+      var(--primary) 25%,
+      transparent
+    );
+
+  transition:
+    transform 0.2s ease,
+    filter 0.2s ease,
+    background 0.5s ease;
 }
 
-.login-button:hover {
-  background: var(--primary-dark);
-  transform: translateY(-1px);
+.login-button:hover:not(:disabled) {
+  transform:
+    translateY(-2px);
+
+  filter:
+    brightness(1.06);
 }
 
-.register-text {
-  margin-top: 28px;
-  text-align: center;
-  color: var(--muted);
-  font-size: 14px;
+.login-button:disabled {
+  opacity: 0.6;
+
+  cursor: not-allowed;
 }
 
-.register-text a {
-  margin-left: 5px;
-  color: var(--primary);
-  font-weight: 700;
+
+/* =========================================================
+   ERROR
+   ========================================================= */
+
+.login-error {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+
+  margin-bottom: 10px;
+
+  padding: 7px 9px;
+
+  border-radius: 8px;
+
+  color: #a52b24;
+
+  background: #fff3f1;
+
+  font-size: 7.5px;
 }
 
-/* MOBILE */
+.login-error span {
+  width: 16px;
+  height: 16px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  color: white;
+
+  background: #d93025;
+
+  font-weight: 800;
+}
+
+
+/* =========================================================
+   REGISTER
+   ========================================================= */
+
+.register-section {
+  margin-top: 14px;
+}
+
+.divider {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-bottom: 8px;
+}
+
+.divider span {
+  flex: 1;
+
+  height: 1px;
+
+  background: #e5e9ea;
+}
+
+.divider small {
+  color: #95a1a6;
+
+  font-size: 6.8px;
+}
+
+.register-button {
+  width: 100%;
+
+  height: 37px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  border:
+    1.2px solid
+    var(--primary);
+
+  border-radius: 9px;
+
+  color:
+    var(--primary);
+
+  background: white;
+
+  text-decoration: none;
+
+  font-size: 8px;
+
+  font-weight: 850;
+
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    transform 0.2s ease;
+}
+
+.register-button:hover {
+  color: white;
+
+  background:
+    var(--primary);
+
+  transform:
+    translateY(-1px);
+}
+
+
+/* =========================================================
+   SECURITY
+   ========================================================= */
+
+.security {
+  display: flex;
+
+  align-items: center;
+
+  gap: 8px;
+
+  margin-top: 9px;
+
+  padding: 7px 9px;
+
+  border:
+    1px solid
+    rgba(46, 125, 50, 0.13);
+
+  border-radius: 8px;
+
+  background: #f4faf5;
+}
+
+.security-icon {
+  min-width: 26px;
+  height: 26px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 7px;
+
+  color:
+    var(--primary);
+
+  background:
+    var(--light);
+}
+
+.security strong {
+  display: block;
+
+  color: #34463a;
+
+  font-size: 7px;
+
+  font-weight: 850;
+}
+
+.security span {
+  display: block;
+
+  margin-top: 2px;
+
+  color: #7d8d84;
+
+  font-size: 6px;
+}
+
+
+/* =========================================================
+   LAPTOP: 1366 x 768
+   ========================================================= */
+
+@media
+  (max-width: 1450px)
+  and (max-height: 820px) {
+
+  .left-content {
+    width: 84%;
+    padding: 22px 0;
+  }
+
+  .brand {
+    margin-bottom: 27px;
+  }
+
+  .hero h1 {
+    font-size: 48px;
+  }
+
+  .hero p {
+    margin-top: 15px;
+  }
+
+  .role-highlight {
+    margin-top: 15px;
+  }
+
+  .feature-grid {
+    margin-top: 11px;
+  }
+
+  .left-bottom {
+    margin-top: 10px;
+  }
+
+  .login-right {
+    padding: 15px 25px;
+  }
+
+  .login-card {
+    padding: 21px 27px 20px;
+  }
+
+  .login-header p {
+    margin-bottom: 13px;
+  }
+
+  .role-grid {
+    margin-bottom: 13px;
+  }
+
+  .login-form {
+    gap: 9px;
+  }
+
+  .register-section {
+    margin-top: 12px;
+  }
+
+  .security {
+    margin-top: 8px;
+  }
+
+  /* =========================================================
+   SLIGHTLY LARGER CONTENT — LAPTOP OPTIMIZED
+   ========================================================= */
+
+.brand-logo {
+  width: 58px;
+  height: 58px;
+}
+
+.brand h2 {
+  font-size: 32px;
+}
+
+.brand p {
+  font-size: 10px;
+}
+
+
+/* LEFT HERO */
+
+.hero-eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+}
+
+.hero h1 {
+  font-size: clamp(47px, 4.2vw, 64px);
+}
+
+.hero p {
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+
+/* ROLE HIGHLIGHT */
+
+.role-highlight {
+  padding: 14px 16px;
+}
+
+.role-highlight-icon {
+  min-width: 48px;
+  height: 48px;
+}
+
+.role-highlight-content small {
+  font-size: 8px;
+}
+
+.role-highlight-content strong {
+  font-size: 12px;
+}
+
+.role-highlight-content p {
+  font-size: 8px;
+}
+
+
+/* FEATURE CARDS */
+
+.feature-card {
+  min-height: 64px;
+  padding: 10px;
+  gap: 10px;
+}
+
+.feature-icon {
+  min-width: 35px;
+  height: 35px;
+}
+
+.feature-card strong {
+  font-size: 9.5px;
+}
+
+.feature-card span {
+  font-size: 7.5px;
+}
+
+.left-bottom {
+  font-size: 8px;
+}
+
+
+/* =========================================================
+   RIGHT LOGIN CARD
+   ========================================================= */
+
+.login-card {
+  width: min(540px, 100%);
+  padding: 29px 32px 24px;
+}
+
+
+/* MINI LOGO */
+
+.mini-logo {
+  width: 40px;
+  height: 40px;
+}
+
+
+/* HEADER */
+
+.welcome {
+  font-size: 9px;
+}
+
+.login-header h2 {
+  font-size: 27px;
+}
+
+.login-header p {
+  font-size: 10px;
+  margin-bottom: 18px;
+}
+
+
+/* ROLE SECTION */
+
+.section-label {
+  font-size: 9px;
+  margin-bottom: 8px;
+}
+
+.role-grid {
+  gap: 8px;
+  margin-bottom: 17px;
+}
+
+.role-card {
+  min-height: 84px;
+  padding: 7px;
+}
+
+.role-card-icon {
+  width: 33px;
+  height: 33px;
+  margin-bottom: 5px;
+}
+
+.role-card strong {
+  font-size: 9.5px;
+}
+
+.role-card > span {
+  font-size: 6.7px;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.login-form {
+  gap: 12px;
+}
+
+.form-field label {
+  font-size: 9px;
+  margin-bottom: 6px;
+}
+
+.input-box input {
+  height: 43px;
+  padding: 0 40px;
+  font-size: 10px;
+}
+
+.input-box > svg {
+  left: 13px;
+}
+
+.eye-button {
+  right: 6px;
+}
+
+
+/* =========================================================
+   OPTIONS
+   ========================================================= */
+
+.remember {
+  font-size: 8px;
+}
+
+.forgot {
+  font-size: 8px;
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+   ========================================================= */
+
+.login-button {
+  height: 45px;
+  font-size: 10px;
+}
+
+
+/* =========================================================
+   CREATE ACCOUNT
+   ========================================================= */
+
+.register-section {
+  margin-top: 17px;
+}
+
+.divider {
+  margin-bottom: 9px;
+}
+
+.divider small {
+  font-size: 7.5px;
+}
+
+.register-button {
+  height: 40px;
+  font-size: 9px;
+}
+
+
+/* =========================================================
+   SECURITY
+   ========================================================= */
+
+.security {
+  margin-top: 10px;
+  padding: 8px 10px;
+}
+
+.security-icon {
+  min-width: 29px;
+  height: 29px;
+}
+
+.security strong {
+  font-size: 7.5px;
+}
+
+.security span {
+  font-size: 6.5px;
+}
+}
+
+/* =========================================================
+   SMALL LAPTOP
+   ========================================================= */
+
+@media
+  (max-width: 1250px)
+  and (max-height: 800px) {
+
+  .login-page {
+    grid-template-columns:
+      46% 54%;
+  }
+
+  .left-content {
+    width: 86%;
+  }
+
+  .brand {
+    margin-bottom: 26px;
+  }
+
+  .brand-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .brand h2 {
+    font-size: 27px;
+  }
+
+  .hero h1 {
+    font-size: 42px;
+
+    letter-spacing: -2.3px;
+  }
+
+  .hero p {
+    font-size: 11px;
+  }
+
+  .role-highlight {
+    padding:
+      10px 12px;
+  }
+
+  .role-highlight-icon {
+    min-width: 39px;
+    height: 39px;
+  }
+
+  .feature-card {
+    min-height: 53px;
+  }
+
+  .feature-icon {
+    min-width: 29px;
+    height: 29px;
+  }
+
+  .login-card {
+    width: 500px;
+
+    padding:
+      21px 25px 18px;
+  }
+
+  .role-card {
+    min-height: 72px;
+  }
+}
+
+
+/* =========================================================
+   TABLET / MOBILE
+   ========================================================= */
 
 @media (max-width: 850px) {
+
   .login-page {
-    display: block;
-  }
-
-  .login-hero {
-    display: none;
-  }
-
-  .login-section {
+    height: auto;
     min-height: 100vh;
-    padding: 30px 22px;
+
+    display: block;
+
+    overflow: visible;
   }
 
-  .mobile-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 23px;
-    font-weight: 800;
-    color: var(--primary);
-    margin-bottom: 55px;
+  .login-left {
+    height: auto;
+    min-height: 570px;
   }
 
-  .mobile-brand .brand-icon {
-    background: var(--primary-light);
-    color: var(--primary);
+  .left-content {
+    height: auto;
+    min-height: 570px;
+
+    width: 88%;
+
+    padding:
+      45px 0;
   }
 
-  .login-header h2 {
-    font-size: 28px;
+  .login-right {
+    height: auto;
+    min-height: auto;
+
+    padding:
+      35px 20px 45px;
+  }
+
+  .login-card {
+    max-height: none;
+  }
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 520px) {
+
+  .login-left {
+    min-height: auto;
+  }
+
+  .left-content {
+    min-height: auto;
+
+    padding:
+      38px 0 40px;
+  }
+
+  .brand {
+    margin-bottom: 40px;
+  }
+
+  .brand-logo {
+    width: 48px;
+    height: 48px;
+  }
+
+  .brand h2 {
+    font-size: 27px;
+  }
+
+  .hero h1 {
+    font-size: 38px;
+
+    letter-spacing: -2px;
+  }
+
+  .hero p {
+    font-size: 11px;
+  }
+
+  .role-highlight {
+    margin-top: 22px;
+  }
+
+  .feature-grid {
+    grid-template-columns: 1fr;
+
+    gap: 8px;
+  }
+
+  .feature-card {
+    min-height: 55px;
+  }
+
+  .login-right {
+    padding:
+      25px 15px 40px;
+  }
+
+  .login-card {
+    width: 100%;
+
+    padding:
+      25px 19px 21px;
+
+    border-radius: 20px;
+  }
+
+  .role-grid {
+    grid-template-columns:
+      repeat(2, 1fr);
+  }
+
+  .role-card {
+    min-height: 80px;
   }
 }

@@ -10,6 +10,7 @@ class UserRole(str, enum.Enum):
     FARMER = "FARMER"
     FPO = "FPO"
     BUYER = "BUYER"
+    TRANSPORTER = "TRANSPORTER"
     ADMIN = "ADMIN"
 
 

@@ -1,10 +1,13 @@
+
 import {
   BrowserRouter,
   Routes,
   Route,
   Navigate,
 } from "react-router-dom";
+
 import Profile from "./pages/Profile";
+import Settings from "./pages/Settings";
 import Logistics from "./pages/Logistics";
 import NetRealisation from "./pages/NetRealisation";
 import Login from "./pages/Login";
@@ -15,23 +18,15 @@ import Dashboard from "./pages/Dashboard";
 import MarketPrices from "./pages/MarketPrices";
 import Weather from "./pages/Weather";
 import Assistant from "./pages/Assistant";
-function ComingSoon({ title }) {
-  return (
-    <div style={{ padding: "30px" }}>
-      <h1>{title}</h1>
-      <p style={{ marginTop: "10px", color: "#6b756b" }}>
-        This KrishiSetu module is coming next.
-      </p>
-    </div>
-  );
-}
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
 
-        {/* AUTH */}
+        {/* =========================
+            AUTH
+        ========================== */}
 
         <Route
           path="/login"
@@ -44,14 +39,16 @@ function App() {
         />
 
 
-        {/* DASHBOARD */}
+        {/* =========================
+            DASHBOARD
+        ========================== */}
 
         <Route
           path="/dashboard"
           element={<DashboardLayout />}
         >
 
-          {/* Dashboard Home */}
+          {/* Dashboard */}
 
           <Route
             index
@@ -67,50 +64,67 @@ function App() {
           />
 
 
-          {/* Other Modules */}
+          {/* Net Realisation */}
 
           <Route
             path="net-realisation"
             element={<NetRealisation />}
           />
 
+
+          {/* Logistics */}
+
           <Route
             path="logistics"
-            element={
-              <Logistics />
-            }
+            element={<Logistics />}
           />
+
+
+          {/* Buyer Trust */}
 
           <Route
             path="buyer-trust"
-            element={
-              <BuyerTrust />
-            }
+            element={<BuyerTrust />}
           />
+
+
+          {/* Weather */}
 
           <Route
             path="weather"
-            element={
-              <Weather />
-            }
+            element={<Weather />}
           />
+
+
+          {/* AI Assistant */}
 
           <Route
             path="assistant"
-            element={
-              <Assistant />
-            }
+            element={<Assistant />}
           />
 
+
+          {/* Profile */}
+
           <Route
-  path="profile"
-  element={<Profile />}
-/>
+            path="profile"
+            element={<Profile />}
+          />
+
+
+          {/* Settings */}
+
+          <Route
+            path="settings"
+            element={<Settings />}
+          />
 
         </Route>
 
 
-        {/* FALLBACK */}
+        {/* =========================
+            FALLBACK
+        ========================== */}
 
         <Route
           path="*"
@@ -128,3 +142,4 @@ function App() {
 }
 
 export default App;
+

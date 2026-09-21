@@ -46,3 +46,6 @@ Thumbs.db
 *.db
 *.sqlite
 *.sqlite3
+# Local backup/archive files
+*.zip
+*_BACKUP.py

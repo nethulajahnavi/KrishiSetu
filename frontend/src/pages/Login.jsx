@@ -1,10 +1,19 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+
 import {
   ArrowRight,
+  Check,
+  Eye,
+  EyeOff,
   Leaf,
   Lock,
   Mail,
+  ShieldCheck,
+  ShoppingCart,
+  Sprout,
+  Truck,
+  Users,
 } from "lucide-react";
 
 import "./Login.css";
@@ -12,255 +21,370 @@ import "./Login.css";
 function Login() {
   const navigate = useNavigate();
 
-  const [showPassword, setShowPassword] = useState(false);
+  const [selectedRole, setSelectedRole] = useState("FARMER");
 
-  const [emailOrPhone, setEmailOrPhone] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [rememberMe, setRememberMe] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleLogin(e) {
+  const roles = [
+    {
+      id: "ADMIN",
+      title: "Admin",
+      description: "Manage the platform",
+      icon: ShieldCheck,
+
+      eyebrow: "PLATFORM CONTROL CENTER",
+
+      titleLine1: "Manage Smarter.",
+      titleLine2: "Keep KrishiSetu",
+      highlight: "Trusted.",
+
+      descriptionText:
+        "Monitor users, marketplace activity and platform operations from one secure control center.",
+
+      panelTitle: "Platform Administration",
+      panelText:
+        "Manage users, verify activity and maintain a trusted agricultural marketplace.",
+
+      theme: "admin",
+    },
+
+    {
+      id: "FARMER",
+      title: "Farmer",
+      description: "Sell produce & find better markets",
+      icon: Sprout,
+
+      eyebrow: "YOUR FARM. YOUR OPPORTUNITY.",
+
+      titleLine1: "From Your Farm",
+      titleLine2: "to the",
+      highlight: "Right Market.",
+
+      descriptionText:
+        "Discover better prices, trusted buyers and smarter routes to get more value from every harvest.",
+
+      panelTitle: "Farmer Experience",
+      panelText:
+        "Compare markets, calculate net realisation and connect with trusted buyers.",
+
+      theme: "farmer",
+    },
+
+    {
+      id: "BUYER",
+      title: "Buyer",
+      description: "Source quality produce",
+      icon: ShoppingCart,
+
+      eyebrow: "SOURCE WITH CONFIDENCE.",
+
+      titleLine1: "Find Quality.",
+      titleLine2: "Buy at the",
+      highlight: "Right Price.",
+
+      descriptionText:
+        "Connect with reliable farmers and FPOs, compare offers and simplify agricultural procurement.",
+
+      panelTitle: "Buyer Marketplace",
+      panelText:
+        "Find trusted suppliers, compare offers and reduce your procurement cost.",
+
+      theme: "buyer",
+    },
+
+    {
+      id: "TRANSPORTER",
+      title: "Transporter",
+      description: "Move produce efficiently",
+      icon: Truck,
+
+      eyebrow: "MOVE SMART. DELIVER BETTER.",
+
+      titleLine1: "The Right Route.",
+      titleLine2: "The Right Load.",
+      highlight: "The Right Time.",
+
+      descriptionText:
+        "Connect transport capacity with agricultural demand and make every journey more efficient.",
+
+      panelTitle: "Smart Logistics",
+      panelText:
+        "Find transport opportunities, manage routes and help produce reach the right market.",
+
+      theme: "transporter",
+    },
+  ];
+
+  const activeRole =
+    roles.find((role) => role.id === selectedRole) ||
+    roles[1];
+
+  const ActiveIcon = activeRole.icon;
+
+  const handleRoleChange = (role) => {
+    setSelectedRole(role);
+    setError("");
+  };
+
+  const handleLogin = async (e) => {
     e.preventDefault();
 
+    setLoading(true);
     setError("");
 
-    // Basic validation
-    if (!emailOrPhone.trim()) {
-      setError("Please enter your email.");
-      return;
-    }
-
-    if (!password) {
-      setError("Please enter your password.");
-      return;
-    }
-
     try {
-      setLoading(true);
+      const body = new URLSearchParams();
 
-      /*
-       * FastAPI OAuth2PasswordRequestForm expects:
-       *
-       * username
-       * password
-       *
-       * with application/x-www-form-urlencoded
-       */
-
-      const formData = new URLSearchParams();
-
-      formData.append(
-        "username",
-        emailOrPhone.trim()
-      );
-
-      formData.append(
-        "password",
-        password
-      );
+      body.append("username", email);
+      body.append("password", password);
+      body.append("role", selectedRole);
 
       const response = await fetch(
         "http://127.0.0.1:8000/api/auth/login",
         {
           method: "POST",
-
           headers: {
             "Content-Type":
               "application/x-www-form-urlencoded",
           },
-
-          body: formData,
+          body: body.toString(),
         }
       );
 
       const data = await response.json();
 
-      console.log("Login response:", data);
-
       if (!response.ok) {
-        let errorMessage = "Login failed.";
-
-        if (typeof data?.detail === "string") {
-          errorMessage = data.detail;
-        } else if (Array.isArray(data?.detail)) {
-          errorMessage = data.detail
-            .map((item) => item.msg)
-            .join(", ");
-        }
-
-        throw new Error(errorMessage);
-      }
-
-      /*
-       * Backend response:
-       *
-       * {
-       *   access_token: "...",
-       *   token_type: "bearer",
-       *   user: {
-       *     id,
-       *     name,
-       *     email,
-       *     phone,
-       *     role
-       *   }
-       * }
-       */
-
-      if (!data.access_token) {
         throw new Error(
-          "Login succeeded but no access token was received."
+          typeof data.detail === "string"
+            ? data.detail
+            : "Incorrect email, password or role."
         );
       }
 
-      if (!data.user) {
+      const actualRole = String(
+        data.user?.role || ""
+      ).toUpperCase();
+
+      if (actualRole !== selectedRole) {
         throw new Error(
-          "Login succeeded but user information was not received."
+          `This account is registered as ${actualRole}.`
         );
       }
 
-      /*
-       * SAVE TOKEN
-       */
+      localStorage.setItem(
+        "krishisetu_token",
+        data.access_token
+      );
+
       localStorage.setItem(
         "token",
         data.access_token
       );
 
-      /*
-       * SAVE ACTUAL REGISTERED USER
-       *
-       * Navbar.jsx and Profile.jsx will
-       * read this information.
-       */
       localStorage.setItem(
         "user",
         JSON.stringify(data.user)
       );
 
-      /*
-       * Optional: save remember-me preference
-       */
+      localStorage.setItem(
+        "selectedRole",
+        selectedRole
+      );
+
       localStorage.setItem(
         "rememberMe",
-        rememberMe ? "true" : "false"
+        String(rememberMe)
       );
 
-      console.log(
-        "Logged-in user:",
-        data.user
-      );
-
-      /*
-       * Go to dashboard
-       */
-      navigate("/dashboard", {
-        replace: true,
-      });
-
+      navigate("/dashboard");
     } catch (err) {
-      console.error(
-        "Login error:",
-        err
-      );
-
       setError(
         err.message ||
-        "Unable to login. Please try again."
+          "Unable to sign in. Please try again."
       );
-
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   return (
-    <div className="login-page">
+    <div
+      className={`login-page role-${activeRole.theme}`}
+      style={{
+        "--role-primary": activeRole.primary,
+      }}
+    >
+      {/* ==================================================
+          LEFT SIDE
+      ================================================== */}
 
-      {/* =========================
-          LEFT HERO SECTION
-      ========================== */}
+      <section className="login-left">
 
-      <section className="login-hero">
+        {/* Animated background */}
 
-        <div className="hero-overlay">
+        <div className="background-effects">
+
+          <div className="glow glow-one" />
+          <div className="glow glow-two" />
+          <div className="glow glow-three" />
+
+          <div className="grid-overlay" />
+
+          <span className="floating-dot dot-one" />
+          <span className="floating-dot dot-two" />
+          <span className="floating-dot dot-three" />
+          <span className="floating-dot dot-four" />
+
+          <div className="decor-ring ring-one" />
+          <div className="decor-ring ring-two" />
+
+        </div>
+
+
+        <div className="left-content">
 
           {/* Brand */}
 
           <div className="brand">
 
-            <div className="brand-icon">
-              <Leaf size={24} />
+            <div className="brand-logo">
+              <Leaf size={32} />
             </div>
 
-            <span>
-              KrishiSetu
-            </span>
+            <div>
+              <h2>
+                Krishi<span>Setu</span>
+              </h2>
+
+              <p>
+                Right Market. Right Buyer. Right Price.
+              </p>
+            </div>
 
           </div>
 
 
-          {/* Hero content */}
+          {/* Hero */}
 
-          <div className="hero-content">
+          <div
+            className="hero"
+            key={selectedRole}
+          >
 
-            <span className="hero-badge">
-
-              <Leaf size={15} />
-
-              Smart Agriculture Platform
-
-            </span>
-
+            <div className="hero-eyebrow">
+              {activeRole.eyebrow}
+            </div>
 
             <h1>
-
-              Grow smarter.
+              {activeRole.titleLine1}
 
               <br />
 
-              <span>
-                Sell better.
-              </span>
+              {activeRole.titleLine2}{" "}
 
+              <span>
+                {activeRole.highlight}
+              </span>
             </h1>
 
-
             <p>
-              One intelligent platform connecting
-              farmers with better markets, trusted
-              buyers, logistics and smarter decisions.
+              {activeRole.descriptionText}
             </p>
 
+          </div>
 
-            <div className="hero-features">
+
+          {/* Dynamic role card */}
+
+          <div
+            className="role-highlight"
+            key={`highlight-${selectedRole}`}
+          >
+
+            <div className="role-highlight-icon">
+              <ActiveIcon size={26} />
+            </div>
+
+            <div className="role-highlight-content">
+
+              <small>
+                {activeRole.title}
+              </small>
+
+              <strong>
+                {activeRole.panelTitle}
+              </strong>
+
+              <p>
+                {activeRole.panelText}
+              </p>
+
+            </div>
+
+            <div className="active-indicator">
+              <span />
+              Active
+            </div>
+
+          </div>
+
+
+          {/* Feature cards */}
+
+          <div className="feature-grid">
+
+            <div className="feature-card">
+
+              <div className="feature-icon feature-green">
+                <Sprout size={19} />
+              </div>
 
               <div>
-                <strong>₹</strong>
+                <strong>Better Prices</strong>
 
                 <span>
-                  Better price discovery
+                  Discover better markets
                 </span>
               </div>
 
+            </div>
+
+
+            <div className="feature-card">
+
+              <div className="feature-icon feature-blue">
+                <Users size={19} />
+              </div>
 
               <div>
-                <strong>✓</strong>
+                <strong>Trusted Network</strong>
 
                 <span>
-                  Trusted buyers
+                  Connect with verified users
                 </span>
               </div>
 
+            </div>
+
+
+            <div className="feature-card">
+
+              <div className="feature-icon feature-orange">
+                <Truck size={19} />
+              </div>
 
               <div>
-                <strong>AI</strong>
+                <strong>Smart Logistics</strong>
 
                 <span>
-                  Smart recommendations
+                  Reduce delivery costs
                 </span>
               </div>
 
@@ -269,38 +393,41 @@ function Login() {
           </div>
 
 
-          {/* Footer */}
+          {/* Bottom statement */}
 
-          <p className="hero-footer">
-            Empowering farmers through technology 🌱
-          </p>
+          <div className="left-bottom">
+
+            <div className="check-circle">
+              <Check size={13} />
+            </div>
+
+            <span>
+              One connected ecosystem for India's
+              agricultural marketplace
+            </span>
+
+          </div>
 
         </div>
 
       </section>
 
 
-      {/* =========================
-          LOGIN SECTION
-      ========================== */}
+      {/* ==================================================
+          RIGHT SIDE
+      ================================================== */}
 
-      <section className="login-section">
+      <section className="login-right">
 
         <div className="login-card">
 
+          <div className="card-accent" />
 
-          {/* Mobile brand */}
 
-          <div className="mobile-brand">
+          {/* Small logo */}
 
-            <div className="brand-icon">
-              <Leaf size={22} />
-            </div>
-
-            <span>
-              KrishiSetu
-            </span>
-
+          <div className="mini-logo">
+            <Leaf size={21} />
           </div>
 
 
@@ -308,44 +435,115 @@ function Login() {
 
           <div className="login-header">
 
+            <div className="welcome">
+              WELCOME BACK
+            </div>
+
             <h2>
-              Welcome back 👋
+              Sign in to{" "}
+              <span>KrishiSetu</span>
             </h2>
 
             <p>
-              Sign in to access your farmer dashboard
+              Continue your journey towards better
+              markets and better opportunities.
             </p>
 
           </div>
 
 
+          {/* Role selector */}
+
+          <div className="role-section">
+
+            <div className="section-label">
+              Continue as
+            </div>
+
+            <div className="role-grid">
+
+              {roles.map((role) => {
+
+                const Icon = role.icon;
+
+                const active =
+                  selectedRole === role.id;
+
+                return (
+                  <button
+                    key={role.id}
+                    type="button"
+                    className={`role-card ${
+                      active ? "selected" : ""
+                    }`}
+                    onClick={() =>
+                      handleRoleChange(role.id)
+                    }
+                  >
+
+                    {active && (
+                      <div className="selected-check">
+                        <Check size={10} />
+                      </div>
+                    )}
+
+                    <div className="role-card-icon">
+                      <Icon size={18} />
+                    </div>
+
+                    <strong>
+                      {role.title}
+                    </strong>
+
+                    <span>
+                      {role.description}
+                    </span>
+
+                  </button>
+                );
+
+              })}
+
+            </div>
+
+          </div>
+
+
+          {/* Error */}
+
+          {error && (
+            <div className="login-error">
+              <span>!</span>
+              {error}
+            </div>
+          )}
+
+
           {/* Login form */}
 
-          <form onSubmit={handleLogin}>
+          <form
+            className="login-form"
+            onSubmit={handleLogin}
+          >
 
-            {/* EMAIL */}
-
-            <div className="input-group">
+            <div className="form-field">
 
               <label>
-                Email
+                Email or Phone Number
               </label>
 
-              <div className="input-wrapper">
+              <div className="input-box">
 
-                <Mail size={19} />
+                <Mail size={17} />
 
                 <input
-                  type="email"
-                  placeholder="Enter your email"
-                  value={emailOrPhone}
+                  type="text"
+                  placeholder="Enter your email or phone"
+                  value={email}
                   onChange={(e) =>
-                    setEmailOrPhone(
-                      e.target.value
-                    )
+                    setEmail(e.target.value)
                   }
-                  autoComplete="email"
-                  disabled={loading}
+                  required
                 />
 
               </div>
@@ -353,36 +551,15 @@ function Login() {
             </div>
 
 
-            {/* PASSWORD */}
+            <div className="form-field">
 
-            <div className="input-group">
+              <label>
+                Password
+              </label>
 
-              <div className="password-label">
+              <div className="input-box">
 
-                <label>
-                  Password
-                </label>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setShowPassword(
-                      !showPassword
-                    )
-                  }
-                  disabled={loading}
-                >
-                  {showPassword
-                    ? "Hide"
-                    : "Show"}
-                </button>
-
-              </div>
-
-
-              <div className="input-wrapper">
-
-                <Lock size={19} />
+                <Lock size={17} />
 
                 <input
                   type={
@@ -393,42 +570,35 @@ function Login() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) =>
-                    setPassword(
-                      e.target.value
+                    setPassword(e.target.value)
+                  }
+                  required
+                />
+
+                <button
+                  type="button"
+                  className="eye-button"
+                  onClick={() =>
+                    setShowPassword(
+                      !showPassword
                     )
                   }
-                  autoComplete="current-password"
-                  disabled={loading}
-                />
+                >
+                  {showPassword ? (
+                    <EyeOff size={17} />
+                  ) : (
+                    <Eye size={17} />
+                  )}
+                </button>
 
               </div>
 
             </div>
 
 
-            {/* ERROR */}
+            <div className="form-options">
 
-            {error && (
-              <div
-                style={{
-                  marginTop: "10px",
-                  padding: "10px 12px",
-                  borderRadius: "8px",
-                  background: "#fff1f1",
-                  color: "#c62828",
-                  fontSize: "14px",
-                }}
-              >
-                {error}
-              </div>
-            )}
-
-
-            {/* OPTIONS */}
-
-            <div className="login-options">
-
-              <label>
+              <label className="remember">
 
                 <input
                   type="checkbox"
@@ -438,23 +608,22 @@ function Login() {
                       e.target.checked
                     )
                   }
-                  disabled={loading}
                 />
 
-                <span>
-                  Remember me
+                <span className="checkbox">
+                  {rememberMe && (
+                    <Check size={10} />
+                  )}
                 </span>
+
+                Remember me
 
               </label>
 
 
               <button
                 type="button"
-                onClick={() =>
-                  setError(
-                    "Password recovery will be available soon."
-                  )
-                }
+                className="forgot"
               >
                 Forgot password?
               </button>
@@ -462,20 +631,18 @@ function Login() {
             </div>
 
 
-            {/* LOGIN BUTTON */}
-
             <button
-              className="login-button"
               type="submit"
+              className="login-button"
               disabled={loading}
             >
 
               {loading
                 ? "Signing in..."
-                : "Sign in"}
+                : `Sign in as ${activeRole.title}`}
 
               {!loading && (
-                <ArrowRight size={19} />
+                <ArrowRight size={17} />
               )}
 
             </button>
@@ -483,15 +650,49 @@ function Login() {
           </form>
 
 
-          {/* REGISTER */}
+          {/* Register */}
 
-          <div className="register-text">
+          <div className="register-section">
 
-            Don't have an account?
+            <div className="divider">
+              <span />
+              <small>
+                New to KrishiSetu?
+              </small>
+              <span />
+            </div>
 
-            <Link to="/register">
-              Create one
+            <Link
+              to="/register"
+              className="register-button"
+            >
+              Create an Account
+              <ArrowRight size={16} />
             </Link>
+
+          </div>
+
+
+          {/* Security */}
+
+          <div className="security">
+
+            <div className="security-icon">
+              <ShieldCheck size={18} />
+            </div>
+
+            <div>
+
+              <strong>
+                Your information is secure
+              </strong>
+
+              <span>
+                Your account and marketplace
+                information are protected.
+              </span>
+
+            </div>
 
           </div>
 

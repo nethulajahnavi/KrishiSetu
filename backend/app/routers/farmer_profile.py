@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.auth.dependencies import require_role
 from app.database import get_db
 from app.models.farmer_profile import FarmerProfile
+from app.models.user import User
 from app.schemas.farmer_profile import (
     FarmerProfileCreate,
     FarmerProfileResponse
 )
-from app.models.user import User
-from app.routers.users import get_current_user
 
 
 router = APIRouter(
@@ -24,15 +24,9 @@ router = APIRouter(
 )
 def create_farmer_profile(
     profile_data: FarmerProfileCreate,
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("FARMER")),
     db: Session = Depends(get_db)
 ):
-
-    if current_user.role != "FARMER":
-        raise HTTPException(
-            status_code=403,
-            detail="Only farmers can create a farmer profile"
-        )
 
     existing_profile = db.query(
         FarmerProfile
@@ -63,7 +57,7 @@ def create_farmer_profile(
     response_model=FarmerProfileResponse
 )
 def get_farmer_profile(
-    current_user: User = Depends(get_current_user),
+    current_user: User = Depends(require_role("FARMER")),
     db: Session = Depends(get_db)
 ):
 

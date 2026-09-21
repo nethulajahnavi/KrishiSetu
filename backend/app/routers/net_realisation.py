@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-
+from app.auth.dependencies import require_role
+from app.models.user import User
 from app.database import get_db
 from app.models.market_price import MarketPrice
 from app.models.logistics import LogisticsOption
@@ -17,6 +18,9 @@ def calculate_net_realisation(
     commodity: str,
     origin: str,
     quantity: float,
+    current_user: User = Depends(
+        require_role("FARMER", "FPO", "ADMIN")
+    ),
     db: Session = Depends(get_db)
 ):
     """

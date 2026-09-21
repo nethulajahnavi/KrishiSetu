@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.api.v1 import router as api_v1_router
 from app.routers.auth import router as auth_router
 from app.routers import users
 from app.routers import assistant
@@ -12,12 +13,13 @@ from app.routers import buyer_matching
 from app.routers import transactions
 from app.routers import buyer_trust
 from app.routers import buyer_ratings
+from app.routers import farmer_ratings
+from app.routers import notifications
 app = FastAPI(
     title="KrishiSetu API",
     description="Agricultural Market Intelligence Platform",
     version="1.0.0"
 )
-
 
 app.add_middleware(
     CORSMiddleware,
@@ -58,6 +60,11 @@ app.include_router(
 app.include_router(
     buyer_ratings.router
 )
+
+app.include_router(api_v1_router)
+app.include_router(farmer_ratings.router)
+app.include_router(notifications.router)
+
 @app.get("/")
 def root():
     return {

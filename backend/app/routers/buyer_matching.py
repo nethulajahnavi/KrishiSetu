@@ -1,8 +1,10 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.auth.dependencies import require_role
 from app.database import get_db
 from app.models.buyer import Buyer
+from app.models.user import User
 
 
 router = APIRouter(
@@ -17,6 +19,9 @@ def match_buyers(
     quantity: float,
     quality: str,
     district: str,
+    current_user: User = Depends(
+        require_role("FARMER", "FPO")
+    ),
     db: Session = Depends(get_db)
 ):
 

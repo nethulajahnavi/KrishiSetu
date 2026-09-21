@@ -1,8 +1,8 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict
 
 
 class MarketPriceCreate(BaseModel):
@@ -40,10 +40,16 @@ class MarketPriceCreate(BaseModel):
 
     source: Optional[str] = None
 
+    is_demo_data: bool = False
+
 
 class MarketPriceResponse(MarketPriceCreate):
 
     id: int
+    last_updated_at: Optional[datetime] = None
 
-    class Config:
-        from_attributes = True
+    # Calculated by the API.
+    # Examples: CURRENT, LAST_REPORTED, DEMO_DATA
+    data_status: str = "LAST_REPORTED"
+
+    model_config = ConfigDict(from_attributes=True)

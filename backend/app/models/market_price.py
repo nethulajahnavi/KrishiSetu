@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Date, DateTime, Integer, Numeric, String
+from sqlalchemy import Boolean, Column, Date, DateTime, Integer, Numeric, String
 from sqlalchemy.sql import func
 
 from app.database import Base
@@ -68,4 +68,15 @@ class MarketPrice(Base):
     created_at = Column(
         DateTime,
         server_default=func.now()
+    )
+    is_demo_data = Column(
+        Boolean,
+        default=False,
+        nullable=False
+    )
+
+    last_updated_at = Column(
+        DateTime,
+        server_default=func.now(),
+        onupdate=func.now()
     )
