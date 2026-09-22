@@ -5,7 +5,7 @@ import {
   Route,
   Navigate,
 } from "react-router-dom";
-
+import Requirements from "./pages/Requirements";
 import Profile from "./pages/Profile";
 import Settings from "./pages/Settings";
 import Logistics from "./pages/Logistics";
@@ -19,6 +19,9 @@ import MarketPrices from "./pages/MarketPrices";
 import Weather from "./pages/Weather";
 import Assistant from "./pages/Assistant";
 import Marketplace from "./pages/Marketplace";
+import Offers from "./pages/Offers";
+import Transactions from "./pages/Transactions";
+
 function App() {
   return (
     <BrowserRouter>
@@ -54,7 +57,19 @@ function App() {
             index
             element={<Dashboard />}
           />
-
+          <Route path="marketplace" element={<Marketplace />} />
+          <Route
+  path="requirements"
+  element={<Requirements />}
+/>
+          <Route
+  path="offers"
+  element={<Offers />}
+/>
+          <Route
+  path="transactions"
+  element={<Transactions />}
+/>
 
           {/* Market Prices */}
 
@@ -135,7 +150,7 @@ function App() {
             />
           }
         />
-        <Route path="marketplace" element={<Marketplace />} />
+        
 
       </Routes>
     </BrowserRouter>
