@@ -3,13 +3,12 @@ import { useEffect, useMemo, useState } from "react";
 import {
   BadgeCheck,
   ChevronRight,
-  Clock3,
-  CreditCard,
   Search,
   ShieldCheck,
   Star,
   TrendingUp,
   Users,
+  SlidersHorizontal,
 } from "lucide-react";
 
 import { getBuyerMatching } from "../api/api";
@@ -20,14 +19,34 @@ import "./BuyerTrust.css";
 function BuyerTrust() {
 
   /* ================================
-     STATE
+     SEARCH / MATCHING INPUTS
   ================================= */
 
-  const [buyers, setBuyers] = useState([]);
+  const [commodity, setCommodity] =
+    useState("Onion");
 
-  const [loading, setLoading] = useState(true);
+  const [quantity, setQuantity] =
+    useState("10");
 
-  const [error, setError] = useState("");
+  const [quality, setQuality] =
+    useState("Grade A");
+
+  const [district, setDistrict] =
+    useState("Nashik");
+
+
+  /* ================================
+     BUYER DATA STATE
+  ================================= */
+
+  const [buyers, setBuyers] =
+    useState([]);
+
+  const [loading, setLoading] =
+    useState(true);
+
+  const [error, setError] =
+    useState("");
 
   const [searchTerm, setSearchTerm] =
     useState("");
@@ -37,217 +56,331 @@ function BuyerTrust() {
 
 
   /* ================================
-     LOAD BUYERS FROM BACKEND
+     LOAD BUYERS
+  ================================= */
+
+  async function loadBuyers(
+    searchParams = {
+      commodity,
+      quantity,
+      quality,
+      district,
+    }
+  ) {
+
+    try {
+
+      setLoading(true);
+      setError("");
+
+      const data =
+        await getBuyerMatching(
+          searchParams
+        );
+
+      console.log(
+        "BUYER MATCHING ACTUAL RESPONSE:"
+      );
+
+      console.log(
+        JSON.stringify(
+          data,
+          null,
+          2
+        )
+      );
+
+
+      /* ================================
+         NORMALIZE BACKEND RESPONSE
+      ================================= */
+
+      let buyerData = [];
+
+
+      if (Array.isArray(data)) {
+
+        buyerData = data;
+
+      } else if (
+        Array.isArray(data?.buyers)
+      ) {
+
+        buyerData = data.buyers;
+
+      } else if (
+        Array.isArray(data?.matches)
+      ) {
+
+        buyerData = data.matches;
+
+      } else if (
+        Array.isArray(data?.results)
+      ) {
+
+        buyerData = data.results;
+
+      }
+
+
+      /* ================================
+         FORMAT BUYERS FOR UI
+      ================================= */
+
+      const formattedBuyers =
+        buyerData.map(
+          (item, index) => {
+
+            const name =
+              item.name ||
+              item.buyer_name ||
+              item.company_name ||
+              item.company ||
+              `Buyer ${index + 1}`;
+
+
+            const location =
+              item.location ||
+              item.city ||
+              item.district ||
+              item.address ||
+              "Location unavailable";
+
+
+            const rating =
+              Number(
+                item.rating ??
+                item.trust_score ??
+                item.buyer_rating ??
+                0
+              );
+
+
+            const trust =
+              Number(
+                item.trust_score ??
+                item.trust ??
+                item.score ??
+                rating ??
+                0
+              );
+
+
+            const orders =
+              Number(
+                item.completed_orders ??
+                item.orders_completed ??
+                item.total_orders ??
+                item.orders ??
+                0
+              );
+
+
+            const paymentDays =
+              item.payment_days ??
+              item.payment_time ??
+              item.payment_terms ??
+              "N/A";
+
+
+            const crop =
+              item.commodity ||
+              item.crop ||
+              item.produce ||
+              searchParams.commodity ||
+              "Produce";
+
+
+            return {
+
+              id:
+                item.id ??
+                index + 1,
+
+              name,
+
+              location,
+
+              rating,
+
+              trust,
+
+              orders,
+
+              paymentDays,
+
+              crop,
+
+              verified:
+                item.verified ??
+                item.is_verified ??
+                true,
+
+              price:
+                Number(
+                  item.price ??
+                  item.offered_price ??
+                  item.modal_price ??
+                  0
+                ),
+
+              raw: item,
+
+            };
+
+          }
+        );
+
+
+      setBuyers(
+        formattedBuyers
+      );
+
+
+      /*
+        Automatically select the first
+        available buyer.
+      */
+
+      if (
+        formattedBuyers.length > 0
+      ) {
+
+        setSelectedBuyer(
+          formattedBuyers[0]
+        );
+
+      } else {
+
+        setSelectedBuyer(null);
+
+      }
+
+    } catch (err) {
+
+      console.error(
+        "Buyer Matching API Error:",
+        err
+      );
+
+      setError(
+        err.message ||
+        "Failed to load buyer data"
+      );
+
+      setBuyers([]);
+
+      setSelectedBuyer(null);
+
+    } finally {
+
+      setLoading(false);
+
+    }
+
+  }
+
+
+  /* ================================
+     INITIAL LOAD
   ================================= */
 
   useEffect(() => {
 
-    async function loadBuyers() {
-
-      try {
-
-        setLoading(true);
-        setError("");
-
-        const data =
-          await getBuyerMatching();
-
-        console.log(
-          "Buyer Matching API:",
-          data
-        );
-
-        /*
-          Backend may return:
-
-          [
-            {...},
-            {...}
-          ]
-
-          OR
-
-          {
-            buyers: [...]
-          }
-
-          OR
-
-          {
-            matches: [...]
-          }
-        */
-
-        let buyerData = [];
-
-        if (Array.isArray(data)) {
-
-          buyerData = data;
-
-        } else if (
-          Array.isArray(data?.buyers)
-        ) {
-
-          buyerData = data.buyers;
-
-        } else if (
-          Array.isArray(data?.matches)
-        ) {
-
-          buyerData = data.matches;
-
-        } else if (
-          Array.isArray(data?.results)
-        ) {
-
-          buyerData = data.results;
-
-        }
-
-        /*
-          Convert backend data into the
-          structure expected by the UI.
-        */
-
-        const formattedBuyers =
-          buyerData.map(
-            (item, index) => {
-
-              const name =
-                item.name ||
-                item.buyer_name ||
-                item.company_name ||
-                item.company ||
-                `Buyer ${index + 1}`;
-
-              const location =
-                item.location ||
-                item.city ||
-                item.district ||
-                item.address ||
-                "Location unavailable";
-
-              const rating =
-                Number(
-                  item.rating ??
-                  item.trust_score ??
-                  item.buyer_rating ??
-                  0
-                );
-
-              const trust =
-                Number(
-                  item.trust_score ??
-                  item.trust ??
-                  item.score ??
-                  rating * 20 ??
-                  0
-                );
-
-              const orders =
-                Number(
-                  item.completed_orders ??
-                  item.orders_completed ??
-                  item.total_orders ??
-                  item.orders ??
-                  0
-                );
-
-              const paymentDays =
-                item.payment_days ??
-                item.payment_time ??
-                item.payment_terms ??
-                "N/A";
-
-              const crop =
-                item.commodity ||
-                item.crop ||
-                item.produce ||
-                "Produce";
-
-              return {
-
-                id:
-                  item.id ??
-                  index + 1,
-
-                name,
-
-                location,
-
-                rating,
-
-                trust,
-
-                orders,
-
-                paymentDays,
-
-                crop,
-
-                verified:
-                  item.verified ??
-                  item.is_verified ??
-                  true,
-
-                price:
-                  Number(
-                    item.price ??
-                    item.offered_price ??
-                    item.modal_price ??
-                    0
-                  ),
-
-                raw: item,
-              };
-
-            }
-          );
-
-
-        setBuyers(
-          formattedBuyers
-        );
-
-
-        if (
-          formattedBuyers.length > 0
-        ) {
-
-          setSelectedBuyer(
-            formattedBuyers[0]
-          );
-
-        }
-
-      } catch (err) {
-
-        console.error(
-          "Buyer Matching API Error:",
-          err
-        );
-
-        setError(
-          err.message ||
-          "Failed to load buyer data"
-        );
-
-      } finally {
-
-        setLoading(false);
-
-      }
-
-    }
-
-
-    loadBuyers();
+    loadBuyers({
+      commodity: "Onion",
+      quantity: "10",
+      quality: "Grade A",
+      district: "Nashik",
+    });
 
   }, []);
 
 
   /* ================================
-     FILTER BUYERS
+     FIND BUYERS
+  ================================= */
+
+  function handleFindBuyers(event) {
+
+    event.preventDefault();
+
+    const cleanedCommodity =
+      commodity.trim();
+
+    const cleanedDistrict =
+      district.trim();
+
+    const cleanedQuantity =
+      String(quantity).trim();
+
+
+    /*
+      Basic frontend validation.
+      Backend validation remains the
+      final authority.
+    */
+
+    if (!cleanedCommodity) {
+
+      setError(
+        "Please enter a commodity."
+      );
+
+      return;
+
+    }
+
+
+    if (
+      !cleanedQuantity ||
+      Number(cleanedQuantity) <= 0
+    ) {
+
+      setError(
+        "Please enter a valid quantity."
+      );
+
+      return;
+
+    }
+
+
+    if (!cleanedDistrict) {
+
+      setError(
+        "Please enter a district."
+      );
+
+      return;
+
+    }
+
+
+    setSearchTerm("");
+
+
+    loadBuyers({
+
+      commodity:
+        cleanedCommodity,
+
+      quantity:
+        cleanedQuantity,
+
+      quality:
+        quality.trim(),
+
+      district:
+        cleanedDistrict,
+
+    });
+
+  }
+
+
+  /* ================================
+     FILTER BUYERS LOCALLY
   ================================= */
 
   const filteredBuyers =
@@ -258,35 +391,48 @@ function BuyerTrust() {
           .toLowerCase()
           .trim();
 
+
       if (!search) {
+
         return buyers;
+
       }
+
 
       return buyers.filter(
         (buyer) => {
 
           return (
+
             buyer.name
               .toLowerCase()
-              .includes(search) ||
+              .includes(search)
+
+            ||
 
             buyer.location
               .toLowerCase()
-              .includes(search) ||
+              .includes(search)
+
+            ||
 
             buyer.crop
               .toLowerCase()
               .includes(search)
+
           );
 
         }
       );
 
-    }, [buyers, searchTerm]);
+    }, [
+      buyers,
+      searchTerm,
+    ]);
 
 
   /* ================================
-     BEST BUYER
+     BEST TRUSTED BUYER
   ================================= */
 
   const bestBuyer =
@@ -348,9 +494,10 @@ function BuyerTrust() {
           </h1>
 
           <p>
-            Find reliable buyers with verified
-            profiles, transparent payments and
-            strong transaction history.
+            Find reliable buyers with
+            verified profiles, transparent
+            payments and strong transaction
+            history.
           </p>
 
         </div>
@@ -361,12 +508,333 @@ function BuyerTrust() {
           <span className="status-dot" />
 
           {loading
-            ? "Loading buyers..."
+            ? "Finding buyers..."
             : "Buyer network active"}
 
         </div>
 
       </div>
+
+
+      {/* ============================
+          MATCHING CONTROLS
+      ============================= */}
+
+      <section
+        style={{
+          marginBottom: "20px",
+          padding: "18px",
+          background: "var(--ks-surface)",
+          border: "1px solid var(--ks-border)",
+          borderRadius: "var(--ks-radius-lg)",
+          boxShadow: "var(--ks-shadow-sm)",
+        }}
+      >
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "10px",
+            marginBottom: "14px",
+          }}
+        >
+
+          <div
+            style={{
+              width: "34px",
+              height: "34px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "var(--role-primary)",
+              background: "var(--role-soft)",
+              borderRadius: "9px",
+              flexShrink: 0,
+            }}
+          >
+
+            <SlidersHorizontal
+              size={17}
+            />
+
+          </div>
+
+
+          <div>
+
+            <h2
+              style={{
+                margin: 0,
+                color: "var(--ks-text)",
+                fontSize: "15px",
+                fontWeight: 750,
+              }}
+            >
+              Find the right buyer
+            </h2>
+
+            <p
+              style={{
+                margin: "3px 0 0",
+                color: "var(--ks-text-muted)",
+                fontSize: "11px",
+              }}
+            >
+              Match your produce with
+              buyers using your requirements.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <form
+          onSubmit={handleFindBuyers}
+          style={{
+            display: "grid",
+            gridTemplateColumns:
+              "minmax(150px, 1.4fr) minmax(110px, .8fr) minmax(130px, 1fr) minmax(150px, 1fr) auto",
+            gap: "10px",
+            alignItems: "end",
+          }}
+        >
+
+
+          {/* COMMODITY */}
+
+          <label
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "6px",
+            }}
+          >
+
+            <span
+              style={{
+                color: "var(--ks-text-muted)",
+                fontSize: "10px",
+                fontWeight: 700,
+              }}
+            >
+              Commodity
+            </span>
+
+            <input
+              type="text"
+              value={commodity}
+              onChange={(e) =>
+                setCommodity(
+                  e.target.value
+                )
+              }
+              placeholder="e.g. Onion"
+              style={{
+                width: "100%",
+                height: "40px",
+                padding: "0 11px",
+                border: "1px solid var(--ks-border)",
+                borderRadius: "9px",
+                outline: "none",
+                background: "var(--ks-surface)",
+                fontSize: "12px",
+              }}
+            />
+
+          </label>
+
+
+          {/* QUANTITY */}
+
+          <label
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "6px",
+            }}
+          >
+
+            <span
+              style={{
+                color: "var(--ks-text-muted)",
+                fontSize: "10px",
+                fontWeight: 700,
+              }}
+            >
+              Quantity (quintals)
+            </span>
+
+            <input
+              type="number"
+              min="0.1"
+              step="0.1"
+              value={quantity}
+              onChange={(e) =>
+                setQuantity(
+                  e.target.value
+                )
+              }
+              placeholder="10"
+              style={{
+                width: "100%",
+                height: "40px",
+                padding: "0 11px",
+                border: "1px solid var(--ks-border)",
+                borderRadius: "9px",
+                outline: "none",
+                background: "var(--ks-surface)",
+                fontSize: "12px",
+              }}
+            />
+
+          </label>
+
+
+          {/* QUALITY */}
+
+          <label
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "6px",
+            }}
+          >
+
+            <span
+              style={{
+                color: "var(--ks-text-muted)",
+                fontSize: "10px",
+                fontWeight: 700,
+              }}
+            >
+              Quality
+            </span>
+
+            <select
+              value={quality}
+              onChange={(e) =>
+                setQuality(
+                  e.target.value
+                )
+              }
+              style={{
+                width: "100%",
+                height: "40px",
+                padding: "0 10px",
+                border: "1px solid var(--ks-border)",
+                borderRadius: "9px",
+                outline: "none",
+                background: "var(--ks-surface)",
+                color: "var(--ks-text)",
+                fontSize: "12px",
+              }}
+            >
+
+              <option value="Grade A">
+                Grade A
+              </option>
+
+              <option value="Grade B">
+                Grade B
+              </option>
+
+              <option value="Grade C">
+                Grade C
+              </option>
+
+            </select>
+
+          </label>
+
+
+          {/* DISTRICT */}
+
+          <label
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "6px",
+            }}
+          >
+
+            <span
+              style={{
+                color: "var(--ks-text-muted)",
+                fontSize: "10px",
+                fontWeight: 700,
+              }}
+            >
+              District
+            </span>
+
+            <input
+              type="text"
+              value={district}
+              onChange={(e) =>
+                setDistrict(
+                  e.target.value
+                )
+              }
+              placeholder="e.g. Nashik"
+              style={{
+                width: "100%",
+                height: "40px",
+                padding: "0 11px",
+                border: "1px solid var(--ks-border)",
+                borderRadius: "9px",
+                outline: "none",
+                background: "var(--ks-surface)",
+                fontSize: "12px",
+              }}
+            />
+
+          </label>
+
+
+          {/* PRIMARY ACTION */}
+
+          <button
+            type="submit"
+            disabled={loading}
+            style={{
+              height: "40px",
+              padding: "0 17px",
+              display: "inline-flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "7px",
+              border: "none",
+              borderRadius: "9px",
+              color: "#ffffff",
+              background:
+                "var(--role-primary)",
+              fontSize: "12px",
+              fontWeight: 700,
+              whiteSpace: "nowrap",
+              cursor:
+                loading
+                  ? "not-allowed"
+                  : "pointer",
+              opacity:
+                loading
+                  ? 0.65
+                  : 1,
+            }}
+          >
+
+            <Search size={15} />
+
+            {loading
+              ? "Finding..."
+              : "Find Buyers"}
+
+          </button>
+
+        </form>
+
+      </section>
 
 
       {/* ============================
@@ -382,11 +850,30 @@ function BuyerTrust() {
             borderRadius: "10px",
             background:
               "#f3f7f3",
+            color: "var(--ks-text-secondary)",
+            fontSize: "12px",
           }}
         >
 
-          Loading buyer data
-          from PostgreSQL...
+          Finding buyers for{" "}
+
+          <strong>
+            {commodity}
+          </strong>
+
+          {" · "}
+
+          {quantity} quintals
+
+          {" · "}
+
+          {quality}
+
+          {" · "}
+
+          {district}
+
+          ...
 
         </div>
 
@@ -403,6 +890,7 @@ function BuyerTrust() {
             background:
               "#fef3f2",
             color: "#b42318",
+            fontSize: "12px",
           }}
         >
 
@@ -459,9 +947,6 @@ function BuyerTrust() {
 
             <strong>
               {averageRating}
-              <small>
-                /5
-              </small>
             </strong>
 
           </div>
@@ -542,14 +1027,12 @@ function BuyerTrust() {
 
             <span className="recommendation-label">
 
-              KRISHISETU RECOMMENDS
+              TOP TRUSTED MATCH
 
             </span>
 
 
             <h2>
-
-              Consider selling to{" "}
 
               {bestBuyer.name}
 
@@ -560,7 +1043,7 @@ function BuyerTrust() {
 
               This buyer currently has the
               strongest trust score among
-              the available buyers.
+              the available matches.
 
             </p>
 
@@ -672,7 +1155,7 @@ function BuyerTrust() {
 
 
         {/* ==========================
-            BUYER LIST
+            EMPTY STATE
         =========================== */}
 
         {!loading &&
@@ -681,23 +1164,48 @@ function BuyerTrust() {
 
             <div
               style={{
-                padding: "35px",
+                padding: "40px 25px",
                 textAlign: "center",
+                color: "var(--ks-text-muted)",
               }}
             >
 
               <Users
                 size={34}
+                style={{
+                  marginBottom: "10px",
+                }}
               />
 
-              <p>
-                No buyers found.
+              <p
+                style={{
+                  margin: 0,
+                  fontSize: "13px",
+                  fontWeight: 650,
+                }}
+              >
+                No buyers found for these
+                requirements.
+              </p>
+
+              <p
+                style={{
+                  marginTop: "5px",
+                  fontSize: "11px",
+                }}
+              >
+                Try changing the commodity,
+                quality, quantity or district.
               </p>
 
             </div>
 
           )}
 
+
+        {/* ==========================
+            BUYER LIST
+        =========================== */}
 
         <div className="buyer-list">
 
@@ -952,6 +1460,7 @@ function BuyerTrust() {
     </div>
 
   );
+
 }
 
 

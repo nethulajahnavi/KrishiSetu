@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { getMarketPrices } from "../api/api";
+import { getMarketPrices, getPriceHistory } from "../api/api";
 import {
   ArrowDown,
   ArrowUp,
@@ -101,8 +101,12 @@ const crops = [
 
 function MarketPrices() {
   const [marketPrices, setMarketPrices] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+const [loading, setLoading] = useState(true);
+const [error, setError] = useState("");
+
+const [priceHistory, setPriceHistory] = useState([]);
+const [historyLoading, setHistoryLoading] = useState(true);
+const [historyError, setHistoryError] = useState("");
   const liveMarketData = marketPrices.map((item, index) => {
   const modalPrice = Number(item.modal_price || 0);
   const arrivalQuintal = Number(item.arrival_quantity || 0);
@@ -148,27 +152,55 @@ function MarketPrices() {
     variety: item.variety,
   };
 });
-  useEffect(() => {
-    async function loadMarketPrices() {
-      try {
-        setLoading(true);
+useEffect(() => {
+  async function loadMarketPrices() {
+    try {
+      setLoading(true);
+      setError("");
 
-        const data = await getMarketPrices();
+      const data = await getMarketPrices();
 
-        console.log("Market Prices API:",  JSON.stringify(data, null, 2));
+      console.log(
+        "Market Prices API:",
+        JSON.stringify(data, null, 2)
+      );
 
-        setMarketPrices(data);
-
-      } catch (err) {
-        console.error(err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
+      setMarketPrices(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Market prices error:", err);
+      setError(err.message);
+      setMarketPrices([]);
+    } finally {
+      setLoading(false);
     }
+  }
 
-    loadMarketPrices();
-  }, []);
+  loadMarketPrices();
+}, []);
+  useEffect(() => {
+  async function loadPriceHistory() {
+    try {
+      setHistoryLoading(true);
+      setHistoryError("");
+
+      const data = await getPriceHistory({ limit: 20 });
+
+      console.log(
+        "Price History API:",
+        JSON.stringify(data, null, 2)
+      );
+
+      setPriceHistory(Array.isArray(data) ? data : []);
+    } catch (err) {
+      console.error("Price history error:", err);
+      setHistoryError(err.message);
+    } finally {
+      setHistoryLoading(false);
+    }
+  }
+
+  loadPriceHistory();
+}, []);
   const [selectedCrop, setSelectedCrop] = useState("Onion");
   const [search, setSearch] = useState("");
   
@@ -213,7 +245,69 @@ function MarketPrices() {
   const lowestPrice = filteredMarkets.length
     ? Math.min(...filteredMarkets.map((item) => item.price))
     : 0;
+    const trendData = [...priceHistory]
+  .filter((item) => item?.price_date && item?.modal_price)
+  .sort(
+    (a, b) =>
+      new Date(a.price_date) - new Date(b.price_date)
+  )
+  .map((item) => ({
+    date: item.price_date,
+    price: Number(item.modal_price) / 100,
+    source: item.source,
+    status: item.data_status,
+  }));
 
+const trendPrices = trendData.map((item) => item.price);
+
+const trendMin =
+  trendPrices.length > 0
+    ? Math.min(...trendPrices)
+    : 0;
+
+const trendMax =
+  trendPrices.length > 0
+    ? Math.max(...trendPrices)
+    : 0;
+
+const trendRange =
+  trendMax - trendMin || 1;
+
+const trendPoints = trendData
+  .map((item, index) => {
+    const x =
+      trendData.length === 1
+        ? 350
+        : (index / (trendData.length - 1)) * 700;
+
+    const y =
+      220 -
+      ((item.price - trendMin) / trendRange) * 165;
+
+    return {
+      ...item,
+      x,
+      y,
+    };
+  });
+
+const polylinePoints = trendPoints
+  .map((point) => `${point.x},${point.y}`)
+  .join(" ");
+
+const trendYAxis = [
+  trendMax + 1,
+  trendMax + 0.5,
+  (trendMax + trendMin) / 2,
+  trendMin + 0.5,
+  trendMin - 1,
+];
+
+const formatTrendDate = (date) =>
+  new Date(date).toLocaleDateString("en-IN", {
+    month: "short",
+    day: "numeric",
+  });
   return (
     <div className="market-page">
     {loading && (
@@ -250,9 +344,9 @@ function MarketPrices() {
         </div>
 
         <div className="market-date">
-          <span>Last updated</span>
-          <strong>Today, 9:30 AM</strong>
-        </div>
+  <span>Data status</span>
+  <strong>Latest reported data</strong>
+</div>
       </div>
 
 
@@ -384,8 +478,8 @@ function MarketPrices() {
 
             <p>
               It currently offers the highest
-              displayed price for {bestMarket.crop}
-              among the selected markets.
+displayed price for {bestMarket.crop}{" "}
+among the selected markets.
             </p>
 
           </div>
@@ -399,15 +493,9 @@ function MarketPrices() {
               <small>/kg</small>
             </strong>
 
-            <div>
-              {bestMarket.change >= 0 ? (
-                <ArrowUp size={13} />
-              ) : (
-                <ArrowDown size={13} />
-              )}
-
-              {Math.abs(bestMarket.change)}%
-            </div>
+            <div className="price-neutral">
+  Price change unavailable
+</div>
 
           </div>
 
@@ -440,7 +528,17 @@ function MarketPrices() {
         <div className="market-table-wrapper">
 
           <table>
-
+  <thead>
+    <tr>
+      <th scope="col">Produce</th>
+      <th scope="col">Market</th>
+      <th scope="col">Price</th>
+      <th scope="col">Change</th>
+      <th scope="col">Arrivals</th>
+      <th scope="col">Distance</th>
+      <th scope="col">Status</th>
+    </tr>
+  </thead>
             <tbody>
   {filteredMarkets.map((market) => (
     <tr key={market.id}>
@@ -541,64 +639,149 @@ function MarketPrices() {
   <div className="section-header">
     <div>
       <h2>Price Trend</h2>
-      <p>Indicative 7-day price movement</p>
+
+      <p>
+        {historyLoading
+          ? "Loading recent price history..."
+          : trendData.length > 0
+          ? "Recent modal price movement from the price history API"
+          : "No price history available"}
+      </p>
     </div>
 
-    <div className="trend-buttons">
-      <button className="active">Last 7 days</button>
-      <button>Last 30 days</button>
-    </div>
-  </div>
-
-  <div className="trend-chart">
-    <div className="chart-y-axis">
-      <span>₹27</span>
-      <span>₹25</span>
-      <span>₹23</span>
-      <span>₹21</span>
-      <span>₹19</span>
-    </div>
-
-    <div className="chart-area">
-      <div className="chart-grid">
-        <span />
-        <span />
-        <span />
-        <span />
-        <span />
-      </div>
-
-      <svg
-        viewBox="0 0 700 260"
-        preserveAspectRatio="none"
-        className="trend-svg"
-      >
-        <polyline
-          points="0,190 115,165 230,180 345,125 460,145 575,90 700,55"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="4"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-
-        <circle cx="700" cy="55" r="7" fill="currentColor" />
-      </svg>
-
-      <div className="chart-x-axis">
-        <span>Aug 22</span>
-        <span>Aug 23</span>
-        <span>Aug 24</span>
-        <span>Aug 25</span>
-        <span>Aug 26</span>
-        <span>Aug 27</span>
-        <span>Aug 28</span>
-      </div>
+    <div className="trend-status">
+      {historyLoading ? (
+        <span>Loading...</span>
+      ) : historyError ? (
+        <span className="trend-error">
+          Price history unavailable
+        </span>
+      ) : (
+        <span className="trend-live">
+          ● API connected
+        </span>
+      )}
     </div>
   </div>
+
+  {historyError && (
+    <div className="trend-message error">
+      Unable to load price history: {historyError}
+    </div>
+  )}
+
+  {!historyLoading && !historyError && trendData.length > 0 && (
+    <>
+      <div className="trend-chart">
+        <div className="chart-y-axis">
+          {trendYAxis.map((value, index) => (
+            <span key={index}>
+              ₹{value.toFixed(2)}
+            </span>
+          ))}
+        </div>
+
+        <div className="chart-area">
+          <div className="chart-grid">
+            <span />
+            <span />
+            <span />
+            <span />
+            <span />
+          </div>
+
+          <svg
+            viewBox="0 0 700 260"
+            preserveAspectRatio="none"
+            className="trend-svg"
+          >
+            {trendPoints.length > 1 && (
+              <polyline
+                points={polylinePoints}
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            )}
+
+            {trendPoints.map((point) => (
+              <circle
+                key={point.date}
+                cx={point.x}
+                cy={point.y}
+                r="6"
+                fill="currentColor"
+              />
+            ))}
+          </svg>
+
+          <div className="chart-x-axis">
+            {trendData.map((item) => (
+              <span key={item.date}>
+                {formatTrendDate(item.date)}
+              </span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      <div className="trend-summary">
+        <div>
+          <span>Latest modal price</span>
+          <strong>
+            ₹{trendData[trendData.length - 1].price.toFixed(2)}
+            <small>/kg</small>
+          </strong>
+        </div>
+
+        <div>
+          <span>Period change</span>
+          <strong
+            className={
+              trendData[trendData.length - 1].price >=
+              trendData[0].price
+                ? "trend-positive"
+                : "trend-negative"
+            }
+          >
+            {trendData[0].price > 0
+              ? `${
+                  trendData[trendData.length - 1].price >=
+                  trendData[0].price
+                    ? "+"
+                    : ""
+                }${(
+                  ((trendData[trendData.length - 1].price -
+                    trendData[0].price) /
+                    trendData[0].price) *
+                  100
+                ).toFixed(1)}%`
+              : "—"}
+          </strong>
+        </div>
+
+        <div>
+          <span>Data points</span>
+          <strong>{trendData.length}</strong>
+        </div>
+      </div>
+    </>
+  )}
+
+  {!historyLoading &&
+    !historyError &&
+    trendData.length === 0 && (
+      <div className="trend-message">
+        No historical price data is available yet.
+      </div>
+    )}
 
   <p className="trend-note">
-    Indicative trend based on available market data.
+    Current history is sourced from the Price History API.
+    The available records are marked as DEMO DATA and currently
+    do not contain crop or market IDs.
   </p>
 </section>
 

@@ -1,0 +1,650 @@
+/* =========================================================
+   KRISHISETU — BUYER DASHBOARD
+========================================================= */
+
+.buyer-dashboard {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+  padding-bottom: 30px;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.buyer-dashboard-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 24px;
+}
+
+.buyer-eyebrow {
+  display: block;
+
+  margin-bottom: 10px;
+
+  color: var(--ks-text-muted);
+
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.buyer-title-row {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 12px;
+}
+
+.buyer-title-icon {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 11px;
+
+  background: var(--role-soft);
+  color: var(--role-primary);
+}
+
+.buyer-title-row h1 {
+  margin: 0;
+
+  color: var(--ks-text);
+
+  font-size: 25px;
+  font-weight: 760;
+
+  letter-spacing: -0.7px;
+}
+
+.buyer-title-row p {
+  max-width: 650px;
+
+  margin-top: 6px;
+
+  color: var(--ks-text-secondary);
+
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.buyer-location {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  padding: 10px 13px;
+
+  border: 1px solid var(--ks-border);
+  border-radius: var(--ks-radius-md);
+
+  background: var(--ks-surface);
+
+  color: var(--role-primary);
+}
+
+.buyer-location div {
+  display: flex;
+  flex-direction: column;
+}
+
+.buyer-location span {
+  color: var(--ks-text-muted);
+
+  font-size: 9px;
+  font-weight: 700;
+
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+}
+
+.buyer-location strong {
+  margin-top: 2px;
+
+  color: var(--ks-text);
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   DECISION CARD
+========================================================= */
+
+.buyer-decision-card {
+  overflow: hidden;
+
+  border: 1px solid var(--ks-border);
+
+  border-radius: var(--ks-radius-xl);
+
+  background: var(--ks-surface);
+
+  box-shadow: var(--ks-shadow-sm);
+}
+
+.buyer-decision-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 24px 26px 20px;
+}
+
+.buyer-section-kicker,
+.buyer-card-heading span,
+.buyer-decision-footer span,
+.buyer-stat-card span,
+.buyer-logistics-strip span {
+  color: var(--role-primary);
+
+  font-size: 9px;
+  font-weight: 800;
+
+  letter-spacing: 1px;
+}
+
+.buyer-decision-top h2 {
+  margin-top: 7px;
+
+  color: var(--ks-text);
+
+  font-size: 19px;
+  font-weight: 750;
+
+  letter-spacing: -0.3px;
+}
+
+.buyer-decision-top p {
+  max-width: 670px;
+
+  margin-top: 5px;
+
+  color: var(--ks-text-secondary);
+
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.buyer-live-status {
+  display: flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 7px 10px;
+
+  border-radius: 999px;
+
+  background: var(--role-soft);
+
+  color: var(--role-primary-dark);
+
+  font-size: 10px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.buyer-live-status span {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+
+  background: var(--role-primary);
+}
+
+
+/* =========================================================
+   PROCUREMENT FLOW
+========================================================= */
+
+.buyer-flow {
+  display: flex;
+  align-items: center;
+
+  padding: 20px 26px;
+
+  border-top: 1px solid var(--ks-border-light);
+  border-bottom: 1px solid var(--ks-border-light);
+
+  background: var(--ks-surface-soft);
+}
+
+.buyer-flow-step {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.buyer-flow-icon,
+.buyer-stat-icon {
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 10px;
+}
+
+.buyer-flow-icon.orange,
+.buyer-stat-icon.orange {
+  background: #fff3e0;
+  color: #f57c00;
+}
+
+.buyer-flow-icon.blue,
+.buyer-stat-icon.blue {
+  background: var(--ks-blue-light);
+  color: var(--ks-blue);
+}
+
+.buyer-flow-icon.green,
+.buyer-stat-icon.green {
+  background: var(--ks-green-light);
+  color: var(--ks-green);
+}
+
+.buyer-flow-icon.purple {
+  background: #f5eafa;
+  color: #7b1fa2;
+}
+
+.buyer-flow-step div:last-child {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.buyer-flow-step span {
+  color: var(--ks-text-muted);
+
+  font-size: 9px;
+  font-weight: 650;
+
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.buyer-flow-step strong {
+  margin-top: 3px;
+
+  color: var(--ks-text);
+
+  font-size: 11px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.buyer-flow-line {
+  flex: 1;
+
+  height: 1px;
+
+  min-width: 18px;
+  margin: 0 14px;
+
+  background: var(--ks-border);
+}
+
+
+/* =========================================================
+   DECISION FOOTER
+========================================================= */
+
+.buyer-decision-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 20px;
+
+  padding: 17px 26px;
+}
+
+.buyer-decision-footer > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.buyer-decision-footer strong {
+  margin-top: 4px;
+
+  color: var(--ks-text);
+
+  font-size: 12px;
+}
+
+.buyer-decision-footer p {
+  margin-top: 3px;
+
+  color: var(--ks-text-muted);
+
+  font-size: 10.5px;
+}
+
+.buyer-decision-footer button,
+.buyer-logistics-strip button {
+  display: inline-flex;
+  align-items: center;
+
+  gap: 7px;
+
+  padding: 10px 14px;
+
+  border: 0;
+  border-radius: 10px;
+
+  background: var(--role-primary);
+
+  color: white;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  white-space: nowrap;
+}
+
+.buyer-decision-footer button:hover,
+.buyer-logistics-strip button:hover {
+  background: var(--role-primary-dark);
+}
+
+
+/* =========================================================
+   STAT CARDS
+========================================================= */
+
+.buyer-stat-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(3, minmax(0, 1fr));
+
+  gap: 14px;
+}
+
+.buyer-stat-card {
+  display: flex;
+  align-items: center;
+
+  gap: 13px;
+
+  min-height: 92px;
+
+  padding: 16px;
+
+  border: 1px solid var(--ks-border);
+
+  border-radius: var(--ks-radius-lg);
+
+  background: var(--ks-surface);
+
+  box-shadow: var(--ks-shadow-xs);
+}
+
+.buyer-stat-card > div:last-child {
+  display: flex;
+  flex-direction: column;
+
+  min-width: 0;
+}
+
+.buyer-stat-card strong {
+  margin-top: 4px;
+
+  color: var(--ks-text);
+
+  font-size: 13px;
+  font-weight: 720;
+}
+
+.buyer-stat-card p {
+  margin-top: 3px;
+
+  color: var(--ks-text-muted);
+
+  font-size: 10.5px;
+}
+
+
+/* =========================================================
+   GENERAL CARD
+========================================================= */
+
+.buyer-card {
+  padding: 21px;
+
+  border: 1px solid var(--ks-border);
+
+  border-radius: var(--ks-radius-lg);
+
+  background: var(--ks-surface);
+
+  box-shadow: var(--ks-shadow-xs);
+}
+
+.buyer-card-heading h3 {
+  margin-top: 5px;
+
+  color: var(--ks-text);
+
+  font-size: 16px;
+}
+
+.buyer-card-heading p {
+  margin-top: 4px;
+
+  color: var(--ks-text-muted);
+
+  font-size: 11px;
+}
+
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.buyer-action-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+
+  gap: 10px;
+
+  margin-top: 18px;
+}
+
+.buyer-action-grid button {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  min-width: 0;
+
+  padding: 13px;
+
+  border: 1px solid var(--ks-border);
+
+  border-radius: 11px;
+
+  background: var(--ks-surface);
+
+  color: var(--ks-text-secondary);
+
+  text-align: left;
+
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.buyer-action-grid button:hover {
+  border-color: var(--role-primary);
+
+  background: var(--role-soft);
+
+  color: var(--role-primary-dark);
+}
+
+.buyer-action-grid button span {
+  flex: 1;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+
+/* =========================================================
+   LOGISTICS
+========================================================= */
+
+.buyer-logistics-strip {
+  display: flex;
+  align-items: center;
+
+  gap: 14px;
+
+  padding: 17px 20px;
+
+  border: 1px solid var(--ks-border);
+
+  border-radius: var(--ks-radius-lg);
+
+  background: var(--ks-surface);
+}
+
+.buyer-logistics-icon {
+  width: 40px;
+  height: 40px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  flex-shrink: 0;
+
+  border-radius: 11px;
+
+  background: var(--role-soft);
+
+  color: var(--role-primary);
+}
+
+.buyer-logistics-strip > div:nth-child(2) {
+  flex: 1;
+
+  min-width: 0;
+}
+
+.buyer-logistics-strip strong {
+  display: block;
+
+  margin-top: 3px;
+
+  color: var(--ks-text);
+
+  font-size: 12px;
+}
+
+.buyer-logistics-strip p {
+  margin-top: 3px;
+
+  color: var(--ks-text-muted);
+
+  font-size: 10.5px;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1000px) {
+
+  .buyer-flow {
+    flex-wrap: wrap;
+
+    gap: 14px;
+  }
+
+  .buyer-flow-line {
+    display: none;
+  }
+
+  .buyer-action-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+@media (max-width: 700px) {
+
+  .buyer-dashboard-heading,
+  .buyer-decision-top,
+  .buyer-decision-footer,
+  .buyer-logistics-strip {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .buyer-location {
+    width: 100%;
+  }
+
+  .buyer-stat-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .buyer-flow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .buyer-decision-footer button,
+  .buyer-logistics-strip button {
+    width: 100%;
+    justify-content: center;
+  }
+
+}
+
+@media (max-width: 500px) {
+
+  .buyer-action-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .buyer-title-row h1 {
+    font-size: 21px;
+  }
+
+}

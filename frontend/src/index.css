@@ -1,32 +1,50 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* =========================================================
+   KRISHISETU — GLOBAL BASE STYLES
+========================================================= */
 
-html {
-  scroll-behavior: smooth;
+html,
+body,
+#root {
+  min-height: 100%;
 }
 
 body {
-  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
-    sans-serif;
-  background: #f7faf7;
-  color: #172117;
+  min-width: 320px;
 }
+
+#root {
+  min-height: 100vh;
+}
+
+
+/* =========================================================
+   FORM PLACEHOLDERS
+========================================================= */
+
+::placeholder {
+  color: var(--ks-text-light);
+  opacity: 1;
+}
+
+
+/* =========================================================
+   DISABLED STATES
+========================================================= */
+
+button:disabled,
+input:disabled,
+select:disabled,
+textarea:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+
+/* =========================================================
+   MOBILE TAP BEHAVIOUR
+========================================================= */
 
 button,
-input,
-select,
-textarea {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-}
-
 a {
-  text-decoration: none;
-  color: inherit;
+  -webkit-tap-highlight-color: transparent;
 }

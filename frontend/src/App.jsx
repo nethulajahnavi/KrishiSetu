@@ -18,7 +18,7 @@ import Dashboard from "./pages/Dashboard";
 import MarketPrices from "./pages/MarketPrices";
 import Weather from "./pages/Weather";
 import Assistant from "./pages/Assistant";
-
+import Marketplace from "./pages/Marketplace";
 function App() {
   return (
     <BrowserRouter>
@@ -135,6 +135,7 @@ function App() {
             />
           }
         />
+        <Route path="marketplace" element={<Marketplace />} />
 
       </Routes>
     </BrowserRouter>

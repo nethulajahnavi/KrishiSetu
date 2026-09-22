@@ -15,6 +15,7 @@ from app.routers import buyer_trust
 from app.routers import buyer_ratings
 from app.routers import farmer_ratings
 from app.routers import notifications
+from app.routers import weather
 app = FastAPI(
     title="KrishiSetu API",
     description="Agricultural Market Intelligence Platform",
@@ -64,6 +65,7 @@ app.include_router(
 app.include_router(api_v1_router)
 app.include_router(farmer_ratings.router)
 app.include_router(notifications.router)
+app.include_router(weather.router)
 
 @app.get("/")
 def root():

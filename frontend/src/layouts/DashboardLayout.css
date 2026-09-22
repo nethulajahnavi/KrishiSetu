@@ -1,141 +1,89 @@
 /* =========================================================
-   KRISHISETU DASHBOARD LAYOUT
-   ========================================================= */
+   KRISHISETU — DASHBOARD SHELL
+========================================================= */
 
 .dashboard-layout {
-  --background: #f7f9f7;
-
   position: relative;
+
   min-height: 100vh;
+  width: 100%;
 
   display: flex;
 
-  background: var(--background);
+  background: var(--ks-bg);
 
   overflow-x: hidden;
 }
 
 
 /* =========================================================
-   ROLE VARIABLES
-   The dashboard stays neutral.
-   Only subtle atmosphere changes.
-   ========================================================= */
-
-/* FARMER */
+   ROLE THEMES
+========================================================= */
 
 .dashboard-layout.role-farmer {
-  --role-color: #2e7d32;
-  --role-soft: #eaf7ea;
-  --role-glow: rgba(46, 125, 50, 0.13);
+  --role-primary: var(--ks-green);
+  --role-primary-dark: var(--ks-green-dark);
+  --role-soft: var(--ks-green-light);
+  --role-glow: rgba(46, 125, 50, 0.10);
 }
-
-
-/* BUYER */
 
 .dashboard-layout.role-buyer {
-  --role-color: #fb8c00;
-  --role-soft: #fff4e5;
-  --role-glow: rgba(251, 140, 0, 0.13);
+  --role-primary: var(--ks-blue);
+  --role-primary-dark: var(--ks-blue-dark);
+  --role-soft: var(--ks-blue-light);
+  --role-glow: rgba(21, 101, 192, 0.10);
 }
-
-
-/* FPO */
-
-.dashboard-layout.role-fpo {
-  --role-color: #00897b;
-  --role-soft: #e7f8f5;
-  --role-glow: rgba(0, 137, 123, 0.13);
-}
-
-
-/* TRANSPORTER */
 
 .dashboard-layout.role-transporter {
-  --role-color: #7b1fa2;
-  --role-soft: #f5eaf9;
-  --role-glow: rgba(123, 31, 162, 0.13);
+  --role-primary: var(--ks-blue);
+  --role-primary-dark: var(--ks-blue-dark);
+  --role-soft: var(--ks-blue-light);
+  --role-glow: rgba(21, 101, 192, 0.10);
 }
 
-
-/* ADMIN */
-
 .dashboard-layout.role-admin {
-  --role-color: #1565c0;
-  --role-soft: #eaf2ff;
-  --role-glow: rgba(21, 101, 192, 0.13);
+  --role-primary: #315f8f;
+  --role-primary-dark: #24496f;
+  --role-soft: #edf3f8;
+  --role-glow: rgba(49, 95, 143, 0.10);
 }
 
 
 /* =========================================================
-   ROLE ATMOSPHERE
-   ========================================================= */
+   VERY SUBTLE ROLE ATMOSPHERE
+========================================================= */
 
 .dashboard-atmosphere {
   position: fixed;
 
-  top: 74px;
+  top: var(--ks-navbar-height);
   right: 0;
 
-  width: 500px;
-  height: 340px;
+  width: 420px;
+  height: 300px;
 
   pointer-events: none;
 
   background:
     radial-gradient(
-      circle at 85% 20%,
+      circle at 90% 10%,
       var(--role-glow),
       transparent 68%
     );
 
-  opacity: 0.7;
+  opacity: 0.8;
 
   z-index: 0;
 
   transition:
-    background 0.5s ease,
-    opacity 0.5s ease;
+    opacity 0.35s ease,
+    background 0.35s ease;
 }
 
 
 /* =========================================================
-   SECONDARY SOFT GLOW
-   ========================================================= */
-
-.dashboard-layout::after {
-  content: "";
-
-  position: fixed;
-
-  left: 250px;
-  bottom: -140px;
-
-  width: 380px;
-  height: 280px;
-
-  pointer-events: none;
-
-  background:
-    radial-gradient(
-      circle,
-      var(--role-soft),
-      transparent 70%
-    );
-
-  opacity: 0.55;
-
-  z-index: 0;
-
-  transition:
-    background 0.5s ease,
-    opacity 0.5s ease;
-}
-
-
-/* =========================================================
-   MAIN DASHBOARD AREA
-   ========================================================= */
+   MAIN AREA
+========================================================= */
 
 .dashboard-main {
   position: relative;
@@ -144,36 +92,32 @@
 
   min-width: 0;
 
-  margin-left: 250px;
-
-  background: transparent;
+  margin-left: var(--ks-sidebar-width);
 
   z-index: 1;
 }
 
 
 /* =========================================================
-   DASHBOARD CONTENT
-   ========================================================= */
+   CONTENT
+========================================================= */
 
 .dashboard-content {
   position: relative;
 
   width: 100%;
 
-  max-width: 1600px;
+  max-width: 1680px;
 
   margin: 0 auto;
 
-  padding: 30px;
+  padding: 28px 30px 40px;
 
   z-index: 1;
 }
 
 
-/* =========================================================
-   KEEP CONTENT ABOVE ATMOSPHERE
-   ========================================================= */
+/* Keep pages above atmosphere */
 
 .dashboard-content > * {
   position: relative;
@@ -183,74 +127,52 @@
 
 /* =========================================================
    TABLET
-   ========================================================= */
+========================================================= */
 
 @media (max-width: 1100px) {
-
   .dashboard-content {
     padding: 24px;
   }
-
 }
 
 
 /* =========================================================
    MOBILE
-   ========================================================= */
+========================================================= */
 
 @media (max-width: 900px) {
-
   .dashboard-main {
     margin-left: 0;
   }
 
   .dashboard-content {
-    padding: 20px 16px;
+    padding: 22px 18px 32px;
   }
 
   .dashboard-atmosphere {
     top: 68px;
 
-    width: 350px;
-    height: 260px;
+    width: 320px;
+    height: 240px;
 
     opacity: 0.5;
   }
-
-  .dashboard-layout::after {
-    left: 0;
-
-    width: 280px;
-    height: 220px;
-
-    opacity: 0.4;
-  }
-
 }
 
 
 /* =========================================================
    SMALL MOBILE
-   ========================================================= */
+========================================================= */
 
 @media (max-width: 520px) {
-
   .dashboard-content {
-    padding: 16px 12px;
+    padding: 18px 14px 28px;
   }
 
   .dashboard-atmosphere {
-    width: 280px;
-    height: 220px;
+    width: 260px;
+    height: 200px;
 
     opacity: 0.35;
   }
-
-  .dashboard-layout::after {
-    width: 220px;
-    height: 180px;
-
-    opacity: 0.3;
-  }
-
 }

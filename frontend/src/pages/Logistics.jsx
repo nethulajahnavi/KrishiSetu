@@ -15,6 +15,29 @@ import { getLogistics } from "../api/api";
 
 import "./Logistics.css";
 
+function formatCurrency(value) {
+  return `₹${Number(value || 0).toLocaleString("en-IN", {
+    maximumFractionDigits: 2,
+  })}`;
+}
+
+function formatHours(value) {
+  if (value === null || value === undefined || value === "") {
+    return "Time unavailable";
+  }
+
+  const hours = Number(value);
+
+  if (Number.isNaN(hours)) {
+    return "Time unavailable";
+  }
+
+  if (hours < 1) {
+    return `${Math.round(hours * 60)} min`;
+  }
+
+  return `${hours} hrs`;
+}
 
 function Logistics() {
   const [transportOptions, setTransportOptions] = useState([]);
@@ -23,18 +46,10 @@ function Logistics() {
   const [error, setError] = useState("");
 
   const [from, setFrom] = useState("Nashik");
-  const [destination, setDestination] =
-    useState("Nashik APMC");
-
+  const [destination, setDestination] = useState("Nashik APMC");
   const [quantity, setQuantity] = useState(10);
 
-  const [selectedTransport, setSelectedTransport] =
-    useState(null);
-
-
-  /* ================================
-     LOAD LOGISTICS FROM BACKEND
-  ================================= */
+  const [selectedTransport, setSelectedTransport] = useState(null);
 
   useEffect(() => {
     async function loadLogistics() {
@@ -46,69 +61,84 @@ function Logistics() {
 
         console.log("Logistics API:", data);
 
-        const formatted = data.map((item) => ({
-          id: item.id,
+        const rows = Array.isArray(data) ? data : [];
 
-          type:
-            item.transport_type ||
-            "Transport Vehicle",
+        const formatted = rows.map((item) => {
+          const transportCost = Number(
+            item.cost_per_quintal ??
+              item.transport_cost_per_quintal ??
+              0
+          );
 
-          icon: "🚚",
+          const loadingCost = Number(
+            item.loading_cost_per_quintal ?? 0
+          );
 
-          provider:
-            "KrishiSetu Logistics",
+          const unloadingCost = Number(
+            item.unloading_cost_per_quintal ?? 0
+          );
 
-          capacity:
-            "Available",
+          const totalCostPerQuintal =
+            transportCost +
+            loadingCost +
+            unloadingCost;
 
-          time:
-            item.estimated_time_hours !== null &&
-            item.estimated_time_hours !== undefined
-              ? `${item.estimated_time_hours} hrs`
-              : "Time unavailable",
+          return {
+            id: item.id,
 
-          price:
-            Number(item.cost_per_quintal || 0) +
-            Number(
-              item.loading_cost_per_quintal || 0
-            ) +
-            Number(
-              item.unloading_cost_per_quintal || 0
-            ),
+            type:
+              item.transport_type ||
+              "Transport Vehicle",
 
-          rating: 4.5,
+            origin:
+              item.origin ||
+              from,
 
-          recommended: false,
+            destination:
+              item.destination ||
+              destination,
 
-          origin: item.origin,
+            distance:
+              item.distance_km !== null &&
+              item.distance_km !== undefined
+                ? Number(item.distance_km)
+                : null,
 
-          destination: item.destination,
+            estimatedTime:
+              item.estimated_time_hours !== null &&
+              item.estimated_time_hours !== undefined
+                ? Number(item.estimated_time_hours)
+                : null,
 
-          distance:
-            Number(item.distance_km || 0),
+            transportCostPerQuintal: transportCost,
 
-          raw: item,
-        }));
+            loadingCostPerQuintal: loadingCost,
+
+            unloadingCostPerQuintal: unloadingCost,
+
+            totalCostPerQuintal,
+
+            raw: item,
+          };
+        });
 
         setTransportOptions(formatted);
 
         if (formatted.length > 0) {
-          setSelectedTransport(
-            formatted[0].id
-          );
+          setSelectedTransport(formatted[0].id);
+        } else {
+          setSelectedTransport(null);
         }
-
       } catch (err) {
-        console.error(
-          "Logistics API Error:",
-          err
-        );
+        console.error("Logistics API Error:", err);
 
         setError(
           err.message ||
-          "Failed to load logistics data"
+            "Failed to load logistics data"
         );
 
+        setTransportOptions([]);
+        setSelectedTransport(null);
       } finally {
         setLoading(false);
       }
@@ -117,135 +147,98 @@ function Logistics() {
     loadLogistics();
   }, []);
 
+  const selectedOption = useMemo(
+    () =>
+      transportOptions.find(
+        (item) =>
+          item.id === selectedTransport
+      ),
+    [transportOptions, selectedTransport]
+  );
 
-  /* ================================
-     SELECTED TRANSPORT
-  ================================= */
-
-  const selectedOption =
-    transportOptions.find(
-      (item) =>
-        item.id === selectedTransport
-    );
-
-
-  /* ================================
-     TOTAL COST
-  ================================= */
+  const safeQuantity =
+    Number(quantity) > 0
+      ? Number(quantity)
+      : 0;
 
   const totalCost = useMemo(() => {
-    if (!selectedOption) {
+    if (!selectedOption || safeQuantity <= 0) {
       return 0;
     }
 
-    return selectedOption.price;
-  }, [selectedOption]);
+    return (
+      selectedOption.totalCostPerQuintal *
+      safeQuantity
+    );
+  }, [selectedOption, safeQuantity]);
 
-
-  const costPerQuintal =
-    quantity > 0
-      ? totalCost / quantity
-      : 0;
-
-
-  /* ================================
-     RENDER
-  ================================= */
+  const costPerQuintal = selectedOption
+    ? selectedOption.totalCostPerQuintal
+    : 0;
 
   return (
     <div className="logistics-page">
 
-      {/* ============================
-          HEADER
-      ============================= */}
+      {/* HEADER */}
 
-      <div className="logistics-header">
+      <header className="logistics-header">
 
         <div>
-
           <span className="page-eyebrow">
             SMART LOGISTICS
           </span>
 
-          <h1>
-            Logistics
-          </h1>
+          <h1>Plan the Journey</h1>
 
           <p>
-            Find affordable transportation and
-            plan the best route for your produce.
+            Compare transport cost, distance and
+            travel time before moving your produce.
           </p>
-
         </div>
-
 
         <div className="logistics-status">
-
-          <span className="status-dot" />
+          <span
+            className={`status-dot ${
+              loading ? "loading" : ""
+            }`}
+          />
 
           {loading
-            ? "Loading transport services..."
-            : "Transport services available"}
-
+            ? "Loading transport data"
+            : error
+            ? "Transport data unavailable"
+            : transportOptions.length > 0
+            ? `${transportOptions.length} transport ${
+                transportOptions.length === 1
+                  ? "option"
+                  : "options"
+              } available`
+            : "No transport options available"}
         </div>
 
-      </div>
+      </header>
 
 
-      {/* ============================
-          API STATUS
-      ============================= */}
-
-      {loading && (
-        <div
-          style={{
-            padding: "12px 16px",
-            marginBottom: "16px",
-            borderRadius: "10px",
-            background: "#f3f7f3",
-          }}
-        >
-          Loading transport options...
-        </div>
-      )}
-
-
-      {error && (
-        <div
-          style={{
-            padding: "12px 16px",
-            marginBottom: "16px",
-            borderRadius: "10px",
-            color: "#b42318",
-            background: "#fef3f2",
-          }}
-        >
-          API Error: {error}
-        </div>
-      )}
-
-
-      {/* ============================
-          ROUTE CARD
-      ============================= */}
+      {/* ROUTE PLANNER */}
 
       <section className="route-card">
 
         <div className="route-heading">
 
           <div>
+            <div className="section-kicker">
+              ROUTE PLANNER
+            </div>
 
             <h2>
-              Plan Your Journey
+              Where is the produce going?
             </h2>
 
             <p>
-              Enter where your produce is coming
-              from and where you want to sell.
+              Use your route and quantity to
+              understand the transport requirement.
             </p>
-
           </div>
-
 
           <div className="route-icon">
             <Route size={19} />
@@ -256,22 +249,18 @@ function Logistics() {
 
         <div className="route-inputs">
 
-          {/* FROM */}
-
           <div className="location-field">
 
-            <label>
-              FROM
-            </label>
+            <label>FROM</label>
 
             <div className="location-input">
 
-              <MapPin size={17} />
+              <MapPin size={16} />
 
               <input
                 value={from}
-                onChange={(e) =>
-                  setFrom(e.target.value)
+                onChange={(event) =>
+                  setFrom(event.target.value)
                 }
                 placeholder="Enter origin"
               />
@@ -281,30 +270,24 @@ function Logistics() {
           </div>
 
 
-          {/* ARROW */}
-
           <div className="route-arrow">
             <ArrowRight size={19} />
           </div>
 
 
-          {/* DESTINATION */}
-
           <div className="location-field">
 
-            <label>
-              DESTINATION MARKET
-            </label>
+            <label>DESTINATION MARKET</label>
 
             <div className="location-input">
 
-              <MapPin size={17} />
+              <MapPin size={16} />
 
               <input
                 value={destination}
-                onChange={(e) =>
+                onChange={(event) =>
                   setDestination(
-                    e.target.value
+                    event.target.value
                   )
                 }
                 placeholder="Enter destination"
@@ -315,32 +298,26 @@ function Logistics() {
           </div>
 
 
-          {/* QUANTITY */}
-
           <div className="quantity-field">
 
-            <label>
-              PRODUCE
-            </label>
+            <label>PRODUCE QUANTITY</label>
 
             <div className="quantity-input">
 
-              <Package size={17} />
+              <Package size={16} />
 
               <input
                 type="number"
                 min="1"
                 value={quantity}
-                onChange={(e) =>
+                onChange={(event) =>
                   setQuantity(
-                    Number(e.target.value)
+                    Number(event.target.value)
                   )
                 }
               />
 
-              <span>
-                quintal
-              </span>
+              <span>quintal</span>
 
             </div>
 
@@ -351,28 +328,26 @@ function Logistics() {
       </section>
 
 
-      {/* ============================
-          SUMMARY
-      ============================= */}
+      {/* QUICK SUMMARY */}
 
-      <div className="logistics-summary">
-
-        {/* ROUTE */}
+      <section className="logistics-summary">
 
         <div className="logistics-summary-card">
 
           <div className="logistics-summary-icon">
-            <MapPin size={18} />
+            <Route size={17} />
           </div>
 
-          <div>
+          <div className="summary-content">
 
-            <span>
-              Route
-            </span>
+            <span>ROUTE</span>
 
             <strong>
-              {from} → {destination}
+              {from || "Origin"}{" "}
+              <span className="summary-arrow">
+                →
+              </span>{" "}
+              {destination || "Market"}
             </strong>
 
           </div>
@@ -380,22 +355,18 @@ function Logistics() {
         </div>
 
 
-        {/* PRODUCE */}
-
         <div className="logistics-summary-card">
 
           <div className="logistics-summary-icon">
-            <Package size={18} />
+            <Package size={17} />
           </div>
 
-          <div>
+          <div className="summary-content">
 
-            <span>
-              Produce
-            </span>
+            <span>PRODUCE</span>
 
             <strong>
-              {quantity || 0} quintal
+              {safeQuantity || 0} quintal
             </strong>
 
           </div>
@@ -403,305 +374,380 @@ function Logistics() {
         </div>
 
 
-        {/* COST */}
-
-        <div className="logistics-summary-card">
+        <div className="logistics-summary-card highlight">
 
           <div className="logistics-summary-icon">
-            <Wallet size={18} />
+            <Wallet size={17} />
           </div>
 
-          <div>
+          <div className="summary-content">
 
-            <span>
-              Estimated Cost
-            </span>
+            <span>ESTIMATED TRANSPORT COST</span>
 
             <strong>
-              ₹
-              {totalCost.toLocaleString(
-                "en-IN",
-                {
-                  maximumFractionDigits: 2,
-                }
-              )}
+              {selectedOption
+                ? formatCurrency(totalCost)
+                : "—"}
             </strong>
 
           </div>
 
         </div>
 
-      </div>
+      </section>
 
 
-      {/* ============================
-          TRANSPORT OPTIONS
-      ============================= */}
+      {/* ERROR */}
+
+      {error && (
+        <div className="logistics-alert error">
+
+          <div className="alert-icon">
+            !
+          </div>
+
+          <div>
+            <strong>
+              Transport data could not be loaded
+            </strong>
+
+            <p>{error}</p>
+          </div>
+
+        </div>
+      )}
+
+
+      {/* TRANSPORT OPTIONS */}
 
       <section className="transport-section">
 
         <div className="section-heading">
 
           <div>
+            <div className="section-kicker">
+              TRANSPORT OPTIONS
+            </div>
 
             <h2>
-              Available Transport
+              Compare available transport
             </h2>
 
             <p>
-              Compare available transportation
-              options for your journey.
+              Select an option to see its estimated
+              cost for your produce quantity.
             </p>
-
           </div>
 
-
           <span className="option-count">
-
             {transportOptions.length}{" "}
             {transportOptions.length === 1
               ? "option"
               : "options"}
-
           </span>
 
         </div>
 
 
-        {/* NO OPTIONS */}
+        {loading && (
+          <div className="logistics-loading">
+
+            <div className="loading-spinner" />
+
+            <div>
+              <strong>
+                Loading transport options
+              </strong>
+
+              <p>
+                Checking available logistics data...
+              </p>
+            </div>
+
+          </div>
+        )}
+
 
         {!loading &&
           !error &&
           transportOptions.length === 0 && (
-            <div
-              style={{
-                padding: "30px",
-                textAlign: "center",
-              }}
-            >
-              <Truck size={32} />
+            <div className="transport-empty">
+
+              <div className="empty-icon">
+                <Truck size={25} />
+              </div>
+
+              <strong>
+                No transport options available
+              </strong>
 
               <p>
-                No transport options are
-                currently available.
+                There are currently no logistics
+                records available for this route.
               </p>
+
             </div>
           )}
 
 
-        {/* TRANSPORT LIST */}
+        {!loading &&
+          transportOptions.length > 0 && (
+            <div className="transport-list">
 
-        <div className="transport-list">
+              {transportOptions.map((option) => {
 
-          {transportOptions.map(
-            (option) => {
+                const isSelected =
+                  selectedTransport ===
+                  option.id;
 
-              const isSelected =
-                selectedTransport ===
-                option.id;
+                const estimatedTotal =
+                  option.totalCostPerQuintal *
+                  safeQuantity;
 
-              return (
+                return (
+                  <button
+                    type="button"
+                    key={option.id}
+                    className={`transport-card ${
+                      isSelected
+                        ? "selected"
+                        : ""
+                    }`}
+                    onClick={() =>
+                      setSelectedTransport(
+                        option.id
+                      )
+                    }
+                  >
 
-                <div
-                  key={option.id}
-                  className={`transport-card ${
-                    isSelected
-                      ? "selected"
-                      : ""
-                  }`}
-                  onClick={() =>
-                    setSelectedTransport(
-                      option.id
-                    )
-                  }
-                >
+                    <div className="transport-main">
 
-                  {/* MAIN */}
+                      <div className="vehicle-icon">
+                        <Truck size={21} />
+                      </div>
 
-                  <div className="transport-main">
+                      <div className="transport-name">
 
-                    <div className="vehicle-icon">
-                      {option.icon}
-                    </div>
+                        <div className="transport-title">
 
+                          <strong>
+                            {option.type}
+                          </strong>
 
-                    <div className="transport-name">
+                          {isSelected && (
+                            <span className="selected-badge">
+                              Selected
+                            </span>
+                          )}
 
-                      <div className="transport-title">
+                        </div>
 
-                        <strong>
-                          {option.type}
-                        </strong>
-
-
-                        {option.recommended && (
-                          <span className="recommended-badge">
-                            Recommended
-                          </span>
-                        )}
+                        <span>
+                          {option.origin ||
+                            from}{" "}
+                          →{" "}
+                          {option.destination ||
+                            destination}
+                        </span>
 
                       </div>
 
+                    </div>
+
+
+                    <div className="transport-detail">
 
                       <span>
-                        {option.provider}
+                        <Clock3 size={13} />
+
+                        {formatHours(
+                          option.estimatedTime
+                        )}
+                      </span>
+
+                      <span>
+                        <MapPin size={13} />
+
+                        {option.distance !== null
+                          ? `${option.distance} km`
+                          : "Distance unavailable"}
                       </span>
 
                     </div>
 
-                  </div>
+
+                    <div className="transport-cost">
+
+                      <strong>
+                        {formatCurrency(
+                          estimatedTotal
+                        )}
+                      </strong>
+
+                      <span>
+                        {formatCurrency(
+                          option.totalCostPerQuintal
+                        )}
+                        / quintal
+                      </span>
+
+                    </div>
 
 
-                  {/* DETAILS */}
+                    <div className="transport-select">
 
-                  <div className="transport-detail">
-
-                    <span>
-                      <Package size={13} />
-                      {option.capacity}
-                    </span>
-
-
-                    <span>
-                      <Clock3 size={13} />
-
-                      {option.time}
-                    </span>
-
-
-                    <span>
-                      <MapPin size={13} />
-
-                      {option.distance > 0
-                        ? `${option.distance} km`
-                        : "Distance unavailable"}
-                    </span>
-
-                  </div>
-
-
-                  {/* PRICE */}
-
-                  <div className="transport-price">
-
-                    <strong>
-                      ₹
-                      {option.price.toLocaleString(
-                        "en-IN",
-                        {
-                          maximumFractionDigits: 2,
-                        }
+                      {isSelected ? (
+                        <CheckCircle2
+                          size={22}
+                        />
+                      ) : (
+                        <span className="select-circle" />
                       )}
-                    </strong>
 
-                    <span>
-                      per trip
-                    </span>
+                    </div>
 
-                  </div>
+                  </button>
+                );
+              })}
 
-
-                  {/* SELECTED */}
-
-                  <div className="transport-select">
-
-                    {isSelected ? (
-                      <CheckCircle2
-                        size={22}
-                      />
-                    ) : (
-                      <div className="select-circle" />
-                    )}
-
-                  </div>
-
-                </div>
-
-              );
-            }
+            </div>
           )}
-
-        </div>
 
       </section>
 
 
-      {/* ============================
-          SELECTED TRANSPORT SUMMARY
-      ============================= */}
+      {/* SELECTED TRANSPORT */}
 
       {selectedOption && (
-        <section
-          style={{
-            marginTop: "24px",
-          }}
-        >
+        <section className="selected-transport-card">
 
-          <div
-            style={{
-              display: "flex",
-              justifyContent:
-                "space-between",
-              alignItems: "center",
-              padding: "18px 20px",
-              borderRadius: "14px",
-              background:
-                "rgba(46, 125, 50, 0.08)",
-            }}
-          >
+          <div className="selected-transport-left">
+
+            <div className="selected-transport-icon">
+              <CheckCircle2 size={19} />
+            </div>
 
             <div>
 
-              <strong>
-                Selected:{" "}
+              <span className="selected-label">
+                SELECTED TRANSPORT
+              </span>
+
+              <h3>
                 {selectedOption.type}
-              </strong>
+              </h3>
 
-              <div
-                style={{
-                  marginTop: "5px",
-                  fontSize: "13px",
-                  opacity: 0.7,
-                }}
-              >
-                {from} → {destination}
-              </div>
-
-            </div>
-
-
-            <div
-              style={{
-                textAlign: "right",
-              }}
-            >
-
-              <strong>
-                ₹
-                {totalCost.toLocaleString(
-                  "en-IN",
-                  {
-                    maximumFractionDigits: 2,
-                  }
-                )}
-              </strong>
-
-              <div
-                style={{
-                  fontSize: "12px",
-                  opacity: 0.7,
-                }}
-              >
-                ₹
-                {costPerQuintal.toFixed(
-                  2
-                )}
-                / quintal
-              </div>
+              <p>
+                {from || selectedOption.origin}{" "}
+                <ArrowRight size={13} />{" "}
+                {destination ||
+                  selectedOption.destination}
+              </p>
 
             </div>
 
           </div>
+
+
+          <div className="selected-transport-metrics">
+
+            <div>
+              <span>QUANTITY</span>
+              <strong>
+                {safeQuantity} qtl
+              </strong>
+            </div>
+
+            <div>
+              <span>COST / QTL</span>
+              <strong>
+                {formatCurrency(
+                  costPerQuintal
+                )}
+              </strong>
+            </div>
+
+            <div>
+              <span>TOTAL ESTIMATE</span>
+              <strong className="total-cost">
+                {formatCurrency(totalCost)}
+              </strong>
+            </div>
+
+          </div>
+
+        </section>
+      )}
+
+
+      {/* COST BREAKDOWN */}
+
+      {selectedOption && (
+        <section className="cost-breakdown-card">
+
+          <div className="cost-breakdown-heading">
+
+            <div>
+              <div className="section-kicker">
+                COST BREAKDOWN
+              </div>
+
+              <h2>
+                What makes up the transport cost?
+              </h2>
+            </div>
+
+            <Wallet size={18} />
+          </div>
+
+
+          <div className="cost-breakdown-grid">
+
+            <div>
+              <span>Transport</span>
+              <strong>
+                {formatCurrency(
+                  selectedOption.transportCostPerQuintal
+                )}
+                <small>/ qtl</small>
+              </strong>
+            </div>
+
+            <div>
+              <span>Loading</span>
+              <strong>
+                {formatCurrency(
+                  selectedOption.loadingCostPerQuintal
+                )}
+                <small>/ qtl</small>
+              </strong>
+            </div>
+
+            <div>
+              <span>Unloading</span>
+              <strong>
+                {formatCurrency(
+                  selectedOption.unloadingCostPerQuintal
+                )}
+                <small>/ qtl</small>
+              </strong>
+            </div>
+
+            <div className="breakdown-total">
+              <span>Total / quintal</span>
+              <strong>
+                {formatCurrency(
+                  selectedOption.totalCostPerQuintal
+                )}
+              </strong>
+            </div>
+
+          </div>
+
+          <p className="cost-note">
+            Estimated total = total transport cost
+            per quintal × {safeQuantity || 0} quintal.
+          </p>
 
         </section>
       )}

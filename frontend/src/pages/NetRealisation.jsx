@@ -1,3 +1,4 @@
+
 import { useEffect, useMemo, useState } from "react";
 import { getNetRealisation } from "../api/api";
 
@@ -14,9 +15,7 @@ import {
 
 import "./NetRealisation.css";
 
-
 function NetRealisation() {
-
   /* =====================================================
      INPUTS
   ===================================================== */
@@ -25,8 +24,8 @@ function NetRealisation() {
 
   const [origin, setOrigin] = useState("Nashik");
 
+  // Backend expects quantity in quintals.
   const [quantity, setQuantity] = useState(10);
-
 
   /* =====================================================
      API STATE
@@ -38,27 +37,24 @@ function NetRealisation() {
 
   const [error, setError] = useState("");
 
-
   /* =====================================================
      SELECTED MARKET
+     
+     IMPORTANT:
+     We use the array index instead of market name because
+     the backend can return duplicate market names.
   ===================================================== */
 
-  const [selectedMarket, setSelectedMarket] =
-    useState("");
-
+  const [selectedMarket, setSelectedMarket] = useState(0);
 
   /* =====================================================
      LOAD NET REALISATION
   ===================================================== */
 
   useEffect(() => {
-
     async function loadNetRealisation() {
-
       try {
-
         setLoading(true);
-
         setError("");
 
         const data = await getNetRealisation(
@@ -67,10 +63,10 @@ function NetRealisation() {
           quantity
         );
 
-        console.log(
-          "Net Realisation API:",
-          data
-        );
+        console.log("NET REALISATION ACTUAL RESPONSE:");
+        console.log(JSON.stringify(data, null, 2));
+
+        console.log("Net Realisation API:", data);
 
         setApiData(data);
 
@@ -78,15 +74,9 @@ function NetRealisation() {
           data?.markets &&
           data.markets.length > 0
         ) {
-
-          setSelectedMarket(
-            data.markets[0].market
-          );
-
+          setSelectedMarket(0);
         }
-
       } catch (err) {
-
         console.error(
           "Net Realisation API Error:",
           err
@@ -94,23 +84,17 @@ function NetRealisation() {
 
         setError(
           err.message ||
-          "Failed to calculate net realisation"
+            "Failed to calculate net realisation"
         );
-
       } finally {
-
         setLoading(false);
-
       }
-
     }
 
-    if (quantity > 0) {
+    if (Number(quantity) > 0) {
       loadNetRealisation();
     }
-
   }, [crop, origin, quantity]);
-
 
   /* =====================================================
      MARKETS FROM BACKEND
@@ -118,69 +102,66 @@ function NetRealisation() {
 
   const markets = apiData?.markets || [];
 
-
   /* =====================================================
      SELECTED MARKET DATA
   ===================================================== */
 
   const market = useMemo(() => {
-
-    return markets.find(
-      (item) =>
-        item.market === selectedMarket
-    ) || markets[0] || null;
-
+    return (
+      markets[selectedMarket] ||
+      markets[0] ||
+      null
+    );
   }, [markets, selectedMarket]);
-
 
   /* =====================================================
      CALCULATIONS
   ===================================================== */
 
   const calculations = useMemo(() => {
-
     if (!market) {
-
       return {
         gross: 0,
         totalCosts: 0,
         net: 0,
         costPerKg: 0,
+        quantityQuintals: Number(quantity) || 0,
+        quantityKg:
+          (Number(quantity) || 0) * 100,
       };
-
     }
 
     /*
-      Backend quantity is in quintals.
+      Backend quantity is already in quintals.
 
       1 quintal = 100 kg.
     */
 
     const quantityQuintals =
-      Number(quantity) / 100;
+      Number(quantity) || 0;
 
+    const quantityKg =
+      quantityQuintals * 100;
 
     const gross =
-      Number(market.gross_revenue || 0);
-
+      Number(
+        market.gross_revenue || 0
+      );
 
     const totalCosts =
       Number(
         market.total_logistics_cost || 0
       );
 
-
     const net =
       Number(
         market.net_realisation || 0
       );
 
-
     const costPerKg =
-      quantity > 0
-        ? totalCosts / Number(quantity)
+      quantityKg > 0
+        ? totalCosts / quantityKg
         : 0;
-
 
     return {
       gross,
@@ -188,17 +169,15 @@ function NetRealisation() {
       net,
       costPerKg,
       quantityQuintals,
+      quantityKg,
     };
-
   }, [market, quantity]);
-
 
   /* =====================================================
      BEST MARKET
   ===================================================== */
 
   const bestMarket = useMemo(() => {
-
     if (!markets.length) {
       return null;
     }
@@ -208,23 +187,17 @@ function NetRealisation() {
         Number(b.net_realisation || 0) -
         Number(a.net_realisation || 0)
     )[0];
-
   }, [markets]);
-
 
   /* =====================================================
      LOADING STATE
   ===================================================== */
 
   if (loading && !apiData) {
-
     return (
       <div className="net-page">
-
         <div className="net-header">
-
           <div>
-
             <span className="page-eyebrow">
               FARMER PROFIT INTELLIGENCE
             </span>
@@ -237,26 +210,21 @@ function NetRealisation() {
               See how much money you actually receive
               after selling and transportation costs.
             </p>
-
           </div>
 
           <div className="calculator-badge">
             <Calculator size={15} />
             Smart Calculator
           </div>
-
         </div>
 
         <section className="calculator-card">
-
           <div className="calculator-heading">
-
             <div className="calculator-icon">
               <Calculator size={19} />
             </div>
 
             <div>
-
               <h2>
                 Calculating...
               </h2>
@@ -265,32 +233,21 @@ function NetRealisation() {
                 Getting current market and logistics
                 data from KrishiSetu.
               </p>
-
             </div>
-
           </div>
-
         </section>
-
       </div>
     );
-
   }
 
-
   return (
-
     <div className="net-page">
-
-
       {/* =================================================
           HEADER
       ================================================= */}
 
       <div className="net-header">
-
         <div>
-
           <span className="page-eyebrow">
             FARMER PROFIT INTELLIGENCE
           </span>
@@ -303,27 +260,19 @@ function NetRealisation() {
             See how much money you actually receive
             after selling and transportation costs.
           </p>
-
         </div>
-
 
         <div className="calculator-badge">
-
           <Calculator size={15} />
-
           Smart Calculator
-
         </div>
-
       </div>
-
 
       {/* =================================================
           ERROR
       ================================================= */}
 
       {error && (
-
         <div
           style={{
             padding: "12px 16px",
@@ -334,32 +283,21 @@ function NetRealisation() {
             border: "1px solid #ffcdd2",
           }}
         >
-
           API Error: {error}
-
         </div>
-
       )}
-
 
       {/* =================================================
           CALCULATOR
       ================================================= */}
 
       <section className="calculator-card">
-
-
         <div className="calculator-heading">
-
           <div className="calculator-icon">
-
             <Calculator size={19} />
-
           </div>
 
-
           <div>
-
             <h2>
               Calculate Your Net Realisation
             </h2>
@@ -368,19 +306,13 @@ function NetRealisation() {
               Enter your crop quantity and select
               your origin.
             </p>
-
           </div>
-
         </div>
 
-
         <div className="calculator-inputs">
-
-
           {/* CROP */}
 
           <div className="input-group">
-
             <label>
               Crop
             </label>
@@ -391,7 +323,6 @@ function NetRealisation() {
                 setCrop(e.target.value)
               }
             >
-
               <option>
                 Onion
               </option>
@@ -403,22 +334,17 @@ function NetRealisation() {
               <option>
                 Green Chilli
               </option>
-
             </select>
-
           </div>
-
 
           {/* QUANTITY */}
 
           <div className="input-group">
-
             <label>
               Quantity
             </label>
 
             <div className="input-with-unit">
-
               <input
                 type="number"
                 min="1"
@@ -431,18 +357,14 @@ function NetRealisation() {
               />
 
               <span>
-                kg
+                quintals
               </span>
-
             </div>
-
           </div>
-
 
           {/* ORIGIN */}
 
           <div className="input-group">
-
             <label>
               Origin
             </label>
@@ -454,14 +376,11 @@ function NetRealisation() {
               }
               placeholder="Enter origin"
             />
-
           </div>
-
 
           {/* MARKET */}
 
           <div className="input-group">
-
             <label>
               Market
             </label>
@@ -470,45 +389,39 @@ function NetRealisation() {
               value={selectedMarket}
               onChange={(e) =>
                 setSelectedMarket(
-                  e.target.value
+                  Number(e.target.value)
                 )
               }
             >
-
               {markets.map(
                 (item, index) => (
-
                   <option
-                    key={
-                      item.market +
-                      index
-                    }
-                    value={item.market}
+                    key={`${item.market}-${index}`}
+                    value={index}
                   >
-                    {item.market}
+                    {item.market} — ₹
+                    {Number(
+                      item.modal_price_per_quintal ||
+                        0
+                    ).toLocaleString(
+                      "en-IN"
+                    )}
+                    /q
                   </option>
-
                 )
               )}
-
             </select>
-
           </div>
-
         </div>
-
 
         {/* RESULT */}
 
         <div className="net-result">
-
           <div className="result-label">
             Estimated Net Realisation
           </div>
 
-
           <div className="result-value">
-
             ₹
             {calculations.net.toLocaleString(
               "en-IN",
@@ -516,40 +429,28 @@ function NetRealisation() {
                 maximumFractionDigits: 0,
               }
             )}
-
           </div>
-
 
           <div className="result-per-kg">
-
             ₹
-            {quantity > 0
+            {calculations.quantityKg > 0
               ? (
                   calculations.net /
-                  Number(quantity)
+                  calculations.quantityKg
                 ).toFixed(2)
               : "0.00"}
-
             /kg after costs
-
           </div>
-
         </div>
-
       </section>
-
 
       {/* =================================================
           BREAKDOWN
       ================================================= */}
 
       <section className="breakdown-section">
-
-
         <div className="section-heading">
-
           <div>
-
             <h2>
               Money Breakdown
             </h2>
@@ -558,154 +459,106 @@ function NetRealisation() {
               Understand where your selling value
               goes.
             </p>
-
           </div>
-
         </div>
 
-
         <div className="breakdown-grid">
-
-
           {/* GROSS */}
 
           <div className="money-card gross">
-
             <div className="money-card-top">
-
               <div className="money-icon">
-
                 <ArrowUp size={16} />
-
               </div>
 
               <span>
                 Gross Revenue
               </span>
-
             </div>
 
-
             <strong>
-
               ₹
               {calculations.gross.toLocaleString(
                 "en-IN"
               )}
-
             </strong>
 
-
             <p>
-
-              {quantity.toLocaleString(
+              {calculations.quantityQuintals.toLocaleString(
                 "en-IN"
-              )}
-
-              kg × ₹
+              )}{" "}
+              quintals × ₹
               {market
-                ? (
-                    Number(
-                      market.modal_price_per_quintal ||
+                ? Number(
+                    market.modal_price_per_quintal ||
                       0
-                    ) / 100
-                  ).toFixed(2)
-                : "0.00"}
-
-              /kg
-
+                  ).toLocaleString(
+                    "en-IN"
+                  )
+                : "0"}
+              /quintal
             </p>
-
           </div>
-
 
           {/* COST */}
 
           <div className="money-card cost">
-
             <div className="money-card-top">
-
               <div className="money-icon">
-
                 <ArrowDown size={16} />
-
               </div>
 
               <span>
                 Total Costs
               </span>
-
             </div>
 
-
             <strong>
-
               ₹
               {calculations.totalCosts.toLocaleString(
                 "en-IN"
               )}
-
             </strong>
-
 
             <p>
               Transport + handling
             </p>
-
           </div>
-
 
           {/* NET */}
 
           <div className="money-card net">
-
             <div className="money-card-top">
-
               <div className="money-icon">
-
                 <IndianRupee size={16} />
-
               </div>
 
               <span>
                 Net Realisation
               </span>
-
             </div>
 
-
             <strong>
-
               ₹
               {calculations.net.toLocaleString(
                 "en-IN"
               )}
-
             </strong>
-
 
             <p>
               Actual estimated earnings
             </p>
-
           </div>
-
         </div>
-
       </section>
-
 
       {/* =================================================
           COST BREAKDOWN
       ================================================= */}
 
       <section className="cost-section">
-
-
         <div className="section-heading">
-
           <div>
-
             <h2>
               Cost Breakdown
             </h2>
@@ -714,75 +567,52 @@ function NetRealisation() {
               Actual logistics information returned
               by the backend.
             </p>
-
           </div>
-
         </div>
 
-
         <div className="cost-content">
-
+          {/* TRANSPORTATION */}
 
           <div className="cost-row">
-
             <div className="cost-name">
-
               <div className="cost-small-icon">
-
                 <Truck size={14} />
-
               </div>
 
-
               <div>
-
                 <strong>
                   Transportation
                 </strong>
 
                 <span>
-
                   {market?.distance_km
                     ? `${market.distance_km} km distance`
                     : "Distance unavailable"}
-
                 </span>
-
               </div>
-
             </div>
 
-
             <strong>
-
               ₹
               {Number(
                 market?.transport_cost_per_quintal ||
-                0
+                  0
               ).toLocaleString(
                 "en-IN"
               )}
-
               /quintal
-
             </strong>
-
           </div>
 
+          {/* LOADING */}
 
           <div className="cost-row">
-
             <div className="cost-name">
-
               <div className="cost-small-icon">
-
                 <Package size={14} />
-
               </div>
 
-
               <div>
-
                 <strong>
                   Loading
                 </strong>
@@ -790,42 +620,30 @@ function NetRealisation() {
                 <span>
                   Loading cost
                 </span>
-
               </div>
-
             </div>
 
-
             <strong>
-
               ₹
               {Number(
                 market?.loading_cost_per_quintal ||
-                0
+                  0
               ).toLocaleString(
                 "en-IN"
               )}
-
               /quintal
-
             </strong>
-
           </div>
 
+          {/* UNLOADING */}
 
           <div className="cost-row">
-
             <div className="cost-name">
-
               <div className="cost-small-icon">
-
                 <Package size={14} />
-
               </div>
 
-
               <div>
-
                 <strong>
                   Unloading
                 </strong>
@@ -833,62 +651,45 @@ function NetRealisation() {
                 <span>
                   Unloading cost
                 </span>
-
               </div>
-
             </div>
 
-
             <strong>
-
               ₹
               {Number(
                 market?.unloading_cost_per_quintal ||
-                0
+                  0
               ).toLocaleString(
                 "en-IN"
               )}
-
               /quintal
-
             </strong>
-
           </div>
 
+          {/* TOTAL */}
 
           <div className="cost-total">
-
             <span>
               Total estimated logistics cost
             </span>
 
             <strong>
-
               ₹
               {calculations.totalCosts.toLocaleString(
                 "en-IN"
               )}
-
             </strong>
-
           </div>
-
         </div>
-
       </section>
-
 
       {/* =================================================
           MARKET COMPARISON
       ================================================= */}
 
       <section className="comparison-section">
-
-
         <div className="section-heading">
-
           <div>
-
             <h2>
               Best Market After Costs
             </h2>
@@ -897,220 +698,148 @@ function NetRealisation() {
               Compare what you actually keep,
               not just the displayed market price.
             </p>
-
           </div>
 
-
           <Sparkles size={17} />
-
         </div>
 
-
         <div className="market-list">
-
-
           {markets.map(
             (item, index) => {
-
               const net =
                 Number(
                   item.net_realisation || 0
                 );
 
-
               const isSelected =
-                item.market ===
-                selectedMarket;
-
+                index === selectedMarket;
 
               const isBest =
                 bestMarket &&
-                item.market ===
-                  bestMarket.market;
-
+                item === bestMarket;
 
               return (
-
                 <div
-                  key={
-                    item.market +
-                    index
-                  }
-
+                  key={`${item.market}-${index}`}
                   className={
                     isSelected
                       ? "market-row selected"
                       : "market-row"
                   }
-
                   onClick={() =>
-                    setSelectedMarket(
-                      item.market
-                    )
+                    setSelectedMarket(index)
                   }
                 >
-
-
                   <div className="market-rank">
-
                     {isBest
                       ? "★"
                       : ""}
-
                   </div>
 
-
                   <div className="market-details">
-
                     <strong>
                       {item.market}
                     </strong>
 
-
                     <span>
-
                       <MapPin size={10} />
 
                       {item.distance_km
                         ? `${item.distance_km} km`
                         : "Distance unavailable"}
-
                     </span>
-
                   </div>
 
-
                   <div className="market-price">
-
                     <span>
                       Market price
                     </span>
 
                     <strong>
-
-                      ₹
-                      {(
-                        Number(
-                          item.modal_price_per_quintal ||
-                          0
-                        ) / 100
-                      ).toFixed(2)}
-
-                      /kg
-
-                    </strong>
-
-                  </div>
-
-
-                  <div className="market-cost">
-
-                    <span>
-                      Costs
-                    </span>
-
-                    <strong>
-
                       ₹
                       {Number(
-                        item.total_logistics_cost ||
-                        0
+                        item.modal_price_per_quintal ||
+                          0
                       ).toLocaleString(
                         "en-IN"
                       )}
-
+                      /quintal
                     </strong>
-
                   </div>
 
+                  <div className="market-cost">
+                    <span>
+                      Total costs
+                    </span>
+
+                    <strong>
+                      ₹
+                      {Number(
+                        item.total_logistics_cost ||
+                          0
+                      ).toLocaleString(
+                        "en-IN"
+                      )}
+                    </strong>
+                  </div>
 
                   <div className="market-net">
-
                     <span>
                       Net realisation
                     </span>
 
                     <strong>
-
                       ₹
                       {net.toLocaleString(
                         "en-IN"
                       )}
-
                     </strong>
-
                   </div>
 
-
                   {isBest && (
-
                     <span className="best-badge">
                       BEST
                     </span>
-
                   )}
-
                 </div>
-
               );
-
             }
           )}
-
         </div>
-
       </section>
-
 
       {/* =================================================
           RECOMMENDATION
       ================================================= */}
 
       {bestMarket && (
-
         <section className="net-recommendation">
-
           <div className="recommendation-icon">
-
             <Sparkles size={19} />
-
           </div>
 
-
           <div>
-
             <span>
               KRISHISETU RECOMMENDS
             </span>
 
-
             <h3>
-
               Consider selling at{" "}
               {bestMarket.market}
-
             </h3>
 
-
             <p>
-
               Based on current market prices
               and available logistics information,
               this market provides the highest
               estimated net realisation.
-
             </p>
-
           </div>
-
         </section>
-
       )}
-
     </div>
-
   );
 }
 
-
 export default NetRealisation;
+ 

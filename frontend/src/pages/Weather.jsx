@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+
 import {
   AlertTriangle,
   CloudRain,
@@ -10,164 +11,556 @@ import {
   Wind,
 } from "lucide-react";
 
+import { getWeather } from "../api/api";
+
 import "./Weather.css";
 
-const forecast = [
-  {
-    day: "Today",
-    icon: "🌤️",
-    condition: "Partly Cloudy",
-    high: 31,
-    low: 24,
-    rain: 20,
-  },
-  {
-    day: "Sun",
-    icon: "🌦️",
-    condition: "Light Rain",
-    high: 29,
-    low: 23,
-    rain: 60,
-  },
-  {
-    day: "Mon",
-    icon: "🌧️",
-    condition: "Rain",
-    high: 27,
-    low: 22,
-    rain: 75,
-  },
-  {
-    day: "Tue",
-    icon: "⛅",
-    condition: "Cloudy",
-    high: 28,
-    low: 22,
-    rain: 35,
-  },
-  {
-    day: "Wed",
-    icon: "☀️",
-    condition: "Sunny",
-    high: 32,
-    low: 23,
-    rain: 15,
-  },
-  {
-    day: "Thu",
-    icon: "🌤️",
-    condition: "Partly Cloudy",
-    high: 33,
-    low: 24,
-    rain: 20,
-  },
-  {
-    day: "Fri",
-    icon: "🌦️",
-    condition: "Light Rain",
-    high: 30,
-    low: 23,
-    rain: 50,
-  },
-];
 
-const cropAdvice = {
-  Tomato: {
-    emoji: "🍅",
-    title: "Tomato",
-    advice:
-      "Rain is expected in the next 48 hours. Avoid unnecessary irrigation and monitor for fungal disease.",
-    alert: "Moderate rain risk",
-  },
+// ---------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------
 
-  Onion: {
-    emoji: "🧅",
-    title: "Onion",
-    advice:
-      "Humidity may increase over the next few days. Ensure good field drainage and avoid waterlogging.",
-    alert: "Humidity alert",
-  },
+function formatForecastDay(dateString, index) {
+  if (!dateString) return "—";
 
-  "Green Chilli": {
-    emoji: "🌶️",
-    title: "Green Chilli",
-    advice:
-      "Warm conditions are expected. Monitor soil moisture and provide irrigation during dry periods.",
-    alert: "Normal conditions",
-  },
-};
+  if (index === 0) {
+    return "Today";
+  }
+
+  const date = new Date(`${dateString}T00:00:00`);
+
+  return date.toLocaleDateString("en-IN", {
+    weekday: "short",
+  });
+}
+
+
+function getWeatherIcon(condition = "") {
+  const value = condition.toLowerCase();
+
+  if (
+    value.includes("thunder") ||
+    value.includes("storm")
+  ) {
+    return CloudRain;
+  }
+
+  if (
+    value.includes("rain") ||
+    value.includes("drizzle")
+  ) {
+    return CloudRain;
+  }
+
+  if (
+    value.includes("cloud") ||
+    value.includes("overcast")
+  ) {
+    return CloudSun;
+  }
+
+  if (value.includes("sun") || value.includes("clear")) {
+    return Sun;
+  }
+
+  return CloudSun;
+}
+
+
+function getCropGuidance(crop, weather) {
+  const forecast = weather?.forecast || [];
+
+  const nextTwoDays = forecast.slice(0, 2);
+
+  const maxRainChance = Math.max(
+    ...nextTwoDays.map((item) =>
+      Number(item?.rain_probability || 0)
+    ),
+    0
+  );
+
+  const totalRainfall = nextTwoDays.reduce(
+    (sum, item) =>
+      sum + Number(item?.rainfall_mm || 0),
+    0
+  );
+
+  const maxWind = Math.max(
+    ...nextTwoDays.map((item) =>
+      Number(item?.max_wind_kmh || 0)
+    ),
+    0
+  );
+
+  if (crop === "Tomato") {
+    if (maxRainChance >= 70 || totalRainfall >= 5) {
+      return {
+        status: "Rain caution",
+        text:
+          "Rain is likely over the next two days. Review harvesting and field-work plans and avoid unnecessary exposure of harvested produce.",
+      };
+    }
+
+    if (maxWind >= 20) {
+      return {
+        status: "Wind caution",
+        text:
+          "Higher winds are expected. Monitor crop and support structures during field activities.",
+      };
+    }
+
+    return {
+      status: "Favourable",
+      text:
+        "Current weather signals are relatively favourable for routine tomato field activities.",
+    };
+  }
+
+
+  if (crop === "Onion") {
+    if (maxRainChance >= 70 || totalRainfall >= 5) {
+      return {
+        status: "Rain caution",
+        text:
+          "Rain is likely over the next two days. Take extra care with harvesting, drying and movement of onion produce.",
+      };
+    }
+
+    return {
+      status: "Favourable",
+      text:
+        "Current weather signals are relatively favourable for routine onion activities.",
+    };
+  }
+
+
+  if (crop === "Green Chilli") {
+    if (maxRainChance >= 70 || totalRainfall >= 5) {
+      return {
+        status: "Rain caution",
+        text:
+          "Rain is likely over the next two days. Review harvesting and transport timing for green chilli.",
+      };
+    }
+
+    if (maxWind >= 20) {
+      return {
+        status: "Wind caution",
+        text:
+          "Higher winds are expected. Take care during field activities and monitor the crop.",
+      };
+    }
+
+    return {
+      status: "Favourable",
+      text:
+        "Current weather signals are relatively favourable for routine green chilli activities.",
+    };
+  }
+
+
+  return {
+    status: "Weather-based guidance",
+    text:
+      "Use the current weather and forecast conditions when planning field activities.",
+  };
+}
+
+
+function getFarmingConditions(weather) {
+  const forecast = weather?.forecast || [];
+
+  const nextTwoDays = forecast.slice(0, 2);
+
+  const maxRainChance = Math.max(
+    ...nextTwoDays.map((item) =>
+      Number(item?.rain_probability || 0)
+    ),
+    0
+  );
+
+  const totalRainfall = nextTwoDays.reduce(
+    (sum, item) =>
+      sum + Number(item?.rainfall_mm || 0),
+    0
+  );
+
+  const maxWind = Math.max(
+    ...nextTwoDays.map((item) =>
+      Number(item?.max_wind_kmh || 0)
+    ),
+    0
+  );
+
+
+  // Field work
+  let fieldWork = "Good";
+  let fieldWorkDescription = "Suitable weather signals.";
+
+  if (maxRainChance >= 70 || totalRainfall >= 5) {
+    fieldWork = "Caution";
+    fieldWorkDescription = "Rain is likely.";
+  } else if (maxWind >= 20) {
+    fieldWork = "Moderate";
+    fieldWorkDescription = "Higher winds expected.";
+  }
+
+
+  // Irrigation
+  let irrigation = "Low Need";
+  let irrigationDescription = "Rain signal may reduce immediate need.";
+
+  if (maxRainChance < 30 && totalRainfall < 2) {
+    irrigation = "Review Need";
+    irrigationDescription =
+      "Limited rainfall is expected.";
+  }
+
+
+  // Harvesting
+  let harvesting = "Good";
+  let harvestingDescription =
+    "Check crop and field conditions.";
+
+  if (maxRainChance >= 70 || totalRainfall >= 5) {
+    harvesting = "Moderate";
+    harvestingDescription =
+      "Rain may affect harvesting plans.";
+  }
+
+
+  // Spraying
+  let spraying = "Good";
+  let sprayingDescription =
+    "Weather signals are relatively suitable.";
+
+  if (maxRainChance >= 50 || maxWind >= 15) {
+    spraying = "Caution";
+    sprayingDescription =
+      "Rain or wind may affect application.";
+  }
+
+
+  return [
+    {
+      title: "Field Work",
+      status: fieldWork,
+      description: fieldWorkDescription,
+      icon: Wind,
+    },
+    {
+      title: "Irrigation",
+      status: irrigation,
+      description: irrigationDescription,
+      icon: Droplets,
+    },
+    {
+      title: "Harvesting",
+      status: harvesting,
+      description: harvestingDescription,
+      icon: Sun,
+    },
+    {
+      title: "Spraying",
+      status: spraying,
+      description: sprayingDescription,
+      icon: CloudRain,
+    },
+  ];
+}
+
+
+// ---------------------------------------------------------
+// Weather Component
+// ---------------------------------------------------------
 
 function Weather() {
-  const [crop, setCrop] = useState("Tomato");
+  const [weatherData, setWeatherData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
-  const selectedCrop = cropAdvice[crop];
+  const [selectedCrop, setSelectedCrop] =
+    useState("Green Chilli");
+
+
+  // -------------------------------------------------------
+  // Load real weather data
+  // -------------------------------------------------------
+
+  useEffect(() => {
+    async function loadWeather() {
+      try {
+        setLoading(true);
+        setError("");
+
+        const data = await getWeather();
+
+        setWeatherData(data);
+      } catch (err) {
+        console.error("Weather API Error:", err);
+
+        setError(
+          err?.message ||
+            "Failed to load weather data."
+        );
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    loadWeather();
+  }, []);
+
+
+  // -------------------------------------------------------
+  // Derived data
+  // -------------------------------------------------------
+
+  const forecast = weatherData?.forecast || [];
+
+  const current = weatherData?.current || {};
+
+  const location = weatherData?.location || {};
+
+
+  const todayForecast = forecast[0] || {};
+
+  const rainProbability = Number(
+    todayForecast?.rain_probability || 0
+  );
+
+
+  const farmingConditions = useMemo(
+    () => getFarmingConditions(weatherData),
+    [weatherData]
+  );
+
+
+  const cropGuidance = useMemo(
+    () =>
+      getCropGuidance(
+        selectedCrop,
+        weatherData
+      ),
+    [selectedCrop, weatherData]
+  );
+
+
+  // -------------------------------------------------------
+  // Agricultural alert
+  // -------------------------------------------------------
+
+  const next48Hours = forecast.slice(0, 2);
+
+  const maxRainChance48 = Math.max(
+    ...next48Hours.map((item) =>
+      Number(item?.rain_probability || 0)
+    ),
+    0
+  );
+
+  const rainfall48 = next48Hours.reduce(
+    (sum, item) =>
+      sum + Number(item?.rainfall_mm || 0),
+    0
+  );
+
+  const rainExpected =
+    maxRainChance48 >= 60 ||
+    rainfall48 >= 5;
+
+
+  // -------------------------------------------------------
+  // Loading state
+  // -------------------------------------------------------
+
+  if (loading) {
+    return (
+      <div className="weather-page">
+        <div className="weather-header">
+          <div>
+            <span className="weather-eyebrow">
+              FARM WEATHER INTELLIGENCE
+            </span>
+
+            <h1>Weather</h1>
+
+            <p>
+              Weather insights and farming alerts
+              for better day-to-day decisions.
+            </p>
+          </div>
+        </div>
+
+        <div className="weather-loading">
+          <div className="weather-loading-icon">
+            <CloudSun size={28} />
+          </div>
+
+          <strong>
+            Loading weather data...
+          </strong>
+
+          <span>
+            Getting the latest forecast.
+          </span>
+        </div>
+      </div>
+    );
+  }
+
+
+  // -------------------------------------------------------
+  // Error state
+  // -------------------------------------------------------
+
+  if (error) {
+    return (
+      <div className="weather-page">
+        <div className="weather-header">
+          <div>
+            <span className="weather-eyebrow">
+              FARM WEATHER INTELLIGENCE
+            </span>
+
+            <h1>Weather</h1>
+
+            <p>
+              Weather insights and farming alerts
+              for better day-to-day decisions.
+            </p>
+          </div>
+        </div>
+
+        <div className="weather-error">
+          <div className="weather-error-icon">
+            <AlertTriangle size={26} />
+          </div>
+
+          <div>
+            <strong>
+              Weather data unavailable
+            </strong>
+
+            <p>{error}</p>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => window.location.reload()}
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+
+  // -------------------------------------------------------
+  // Main UI
+  // -------------------------------------------------------
 
   return (
     <div className="weather-page">
 
-      {/* HEADER */}
+      {/* ===================================================
+          HEADER
+      =================================================== */}
 
       <div className="weather-header">
 
         <div>
-          <span className="page-eyebrow">
+          <span className="weather-eyebrow">
             FARM WEATHER INTELLIGENCE
           </span>
 
           <h1>Weather</h1>
 
           <p>
-            Weather insights and farming alerts for
-            better day-to-day decisions.
+            Weather insights and farming alerts
+            for better day-to-day decisions.
           </p>
         </div>
 
         <div className="weather-location">
-          <MapPin size={14} />
-          Hyderabad, Telangana
+          <MapPin size={13} />
+
+          <span>
+            {location?.name || "Hyderabad"}
+            {location?.state
+              ? `, ${location.state}`
+              : ""}
+          </span>
         </div>
 
       </div>
 
 
-      {/* CURRENT WEATHER */}
+      {/* ===================================================
+          CURRENT WEATHER
+      =================================================== */}
 
-      <section className="current-weather">
+      <section className="current-weather-card">
 
-        <div className="current-main">
+        <div className="current-weather-main">
 
           <div className="current-location">
-            <MapPin size={13} />
-            Hyderabad
+            <MapPin size={11} />
+
+            <span>
+              {location?.name || "Hyderabad"}
+            </span>
           </div>
 
           <div className="current-temperature">
-            31°
+            {Math.round(
+              Number(current?.temperature || 0)
+            )}
+            °
           </div>
 
           <div className="current-condition">
-            <CloudSun size={17} />
-            Partly Cloudy
+
+            {(() => {
+              const Icon =
+                getWeatherIcon(
+                  current?.condition
+                );
+
+              return <Icon size={13} />;
+            })()}
+
+            <strong>
+              {current?.condition || "—"}
+            </strong>
+
           </div>
 
-          <span className="feels-like">
-            Feels like 33°
+          <span className="current-source">
+            {weatherData?.source || "Weather API"}
           </span>
 
         </div>
 
 
-        <div className="weather-metrics">
+        <div className="current-weather-metrics">
 
           <div className="weather-metric">
 
-            <div className="metric-icon">
-              <Droplets size={16} />
+            <div className="weather-metric-icon">
+              <Droplets size={14} />
             </div>
 
             <div>
               <span>Humidity</span>
-              <strong>68%</strong>
+
+              <strong>
+                {Number(
+                  current?.humidity || 0
+                )}
+                %
+              </strong>
             </div>
 
           </div>
@@ -175,13 +568,19 @@ function Weather() {
 
           <div className="weather-metric">
 
-            <div className="metric-icon">
-              <Wind size={16} />
+            <div className="weather-metric-icon">
+              <Wind size={14} />
             </div>
 
             <div>
               <span>Wind</span>
-              <strong>14 km/h</strong>
+
+              <strong>
+                {Number(
+                  current?.wind_speed_kmh || 0
+                )}{" "}
+                km/h
+              </strong>
             </div>
 
           </div>
@@ -189,13 +588,16 @@ function Weather() {
 
           <div className="weather-metric">
 
-            <div className="metric-icon">
-              <CloudRain size={16} />
+            <div className="weather-metric-icon">
+              <CloudRain size={14} />
             </div>
 
             <div>
               <span>Rain chance</span>
-              <strong>20%</strong>
+
+              <strong>
+                {rainProbability}%
+              </strong>
             </div>
 
           </div>
@@ -203,13 +605,23 @@ function Weather() {
 
           <div className="weather-metric">
 
-            <div className="metric-icon">
-              <Thermometer size={16} />
+            <div className="weather-metric-icon">
+              <Thermometer size={14} />
             </div>
 
             <div>
-              <span>UV Index</span>
-              <strong>6 Moderate</strong>
+              <span>Feels like</span>
+
+              <strong>
+                {Math.round(
+                  Number(
+                    current?.apparent_temperature ||
+                      current?.temperature ||
+                      0
+                  )
+                )}
+                °
+              </strong>
             </div>
 
           </div>
@@ -219,46 +631,73 @@ function Weather() {
       </section>
 
 
-      {/* FARM ALERT */}
+      {/* ===================================================
+          FARMING ALERT
+      =================================================== */}
 
-      <section className="farm-alert">
+      <section
+        className={`weather-alert ${
+          rainExpected
+            ? "weather-alert-warning"
+            : "weather-alert-normal"
+        }`}
+      >
 
-        <div className="alert-icon">
-          <AlertTriangle size={19} />
+        <div className="weather-alert-icon">
+          {rainExpected ? (
+            <AlertTriangle size={17} />
+          ) : (
+            <CloudSun size={17} />
+          )}
         </div>
 
-        <div className="alert-content">
+        <div className="weather-alert-content">
 
-          <span>FARMING ALERT</span>
+          <span>
+            FARMING ALERT
+          </span>
 
-          <h3>
-            Rain expected over the next 48 hours
-          </h3>
+          <strong>
+            {rainExpected
+              ? "Rain likely over the next 48 hours"
+              : "No significant rainfall signal in the next 48 hours"}
+          </strong>
 
           <p>
-            Consider completing harvesting and
-            transportation activities before the
-            expected rainfall.
+            {rainExpected
+              ? "Review harvesting, field-work and transport plans before rainfall."
+              : "Current forecast does not show a strong rainfall signal over the next 48 hours."}
           </p>
 
         </div>
 
-        <div className="alert-rain">
-          <CloudRain size={15} />
-          60–75%
+        <div className="weather-alert-value">
+
+          <span>
+            Rain chance
+          </span>
+
+          <strong>
+            {maxRainChance48}%
+          </strong>
+
         </div>
 
       </section>
 
 
-      {/* FORECAST */}
+      {/* ===================================================
+          7-DAY FORECAST
+      =================================================== */}
 
-      <section className="forecast-section">
+      <section className="weather-section">
 
-        <div className="section-heading">
+        <div className="weather-section-header">
 
           <div>
-            <h2>7-Day Forecast</h2>
+            <h2>
+              7-Day Forecast
+            </h2>
 
             <p>
               Plan your farm activities around
@@ -266,8 +705,19 @@ function Weather() {
             </p>
           </div>
 
-          <span className="forecast-updated">
-            Updated 10 min ago
+          <span className="weather-updated">
+            Updated{" "}
+            {weatherData?.fetched_at
+              ? new Date(
+                  weatherData.fetched_at
+                ).toLocaleTimeString(
+                  "en-IN",
+                  {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  }
+                )
+              : "recently"}
           </span>
 
         </div>
@@ -275,64 +725,93 @@ function Weather() {
 
         <div className="forecast-grid">
 
-          {forecast.map((item) => (
+          {forecast.map((item, index) => {
 
-            <div
-              key={item.day}
-              className={
-                item.day === "Today"
-                  ? "forecast-card today"
-                  : "forecast-card"
-              }
-            >
+            const Icon =
+              getWeatherIcon(
+                item?.condition
+              );
 
-              <span className="forecast-day">
-                {item.day}
-              </span>
+            return (
+              <div
+                className={`forecast-card ${
+                  index === 0
+                    ? "forecast-card-active"
+                    : ""
+                }`}
+                key={`${item?.date}-${index}`}
+              >
 
-              <div className="forecast-icon">
-                {item.icon}
-              </div>
-
-              <strong className="forecast-condition">
-                {item.condition}
-              </strong>
-
-              <div className="forecast-temperature">
-                <strong>{item.high}°</strong>
-                <span>{item.low}°</span>
-              </div>
-
-              <div className="rain-probability">
-
-                <CloudRain size={11} />
-
-                <span>
-                  {item.rain}%
+                <span className="forecast-day">
+                  {formatForecastDay(
+                    item?.date,
+                    index
+                  )}
                 </span>
 
+                <div className="forecast-icon">
+                  <Icon size={22} />
+                </div>
+
+                <strong className="forecast-condition">
+                  {item?.condition || "—"}
+                </strong>
+
+                <div className="forecast-temperature">
+
+                  <strong>
+                    {Math.round(
+                      Number(item?.high || 0)
+                    )}
+                    °
+                  </strong>
+
+                  <span>
+                    {Math.round(
+                      Number(item?.low || 0)
+                    )}
+                    °
+                  </span>
+
+                </div>
+
+                <div className="forecast-rain">
+
+                  <CloudRain size={11} />
+
+                  <span>
+                    {Number(
+                      item?.rain_probability || 0
+                    )}
+                    %
+                  </span>
+
+                </div>
+
               </div>
-
-            </div>
-
-          ))}
+            );
+          })}
 
         </div>
 
       </section>
 
 
-      {/* CROP ADVISORY */}
+      {/* ===================================================
+          CROP WEATHER ADVISORY
+      =================================================== */}
 
-      <section className="crop-section">
+      <section className="weather-section crop-advisory-section">
 
-        <div className="section-heading">
+        <div className="weather-section-header">
 
           <div>
-            <h2>Crop Weather Advisory</h2>
+            <h2>
+              Crop Weather Advisory
+            </h2>
 
             <p>
-              Select your crop to receive
+              Select your crop to see
               weather-based guidance.
             </p>
           </div>
@@ -342,55 +821,85 @@ function Weather() {
 
         <div className="crop-tabs">
 
-          {Object.keys(cropAdvice).map(
-            (cropName) => (
+          {[
+            "Tomato",
+            "Onion",
+            "Green Chilli",
+          ].map((crop) => (
 
-              <button
-                key={cropName}
-                className={
-                  crop === cropName
-                    ? "crop-tab active"
-                    : "crop-tab"
-                }
-                onClick={() =>
-                  setCrop(cropName)
-                }
-              >
+            <button
+              key={crop}
+              type="button"
+              className={`crop-tab ${
+                selectedCrop === crop
+                  ? "crop-tab-active"
+                  : ""
+              }`}
+              onClick={() =>
+                setSelectedCrop(crop)
+              }
+            >
 
-                {cropAdvice[cropName].emoji}
+              {crop === "Tomato" && "🍅"}
 
-                {cropName}
+              {crop === "Onion" && "🧅"}
 
-              </button>
+              {crop === "Green Chilli" && "🌶️"}
 
-            )
-          )}
+              <span>
+                {crop}
+              </span>
+
+            </button>
+
+          ))}
 
         </div>
 
 
-        <div className="crop-advisory">
+        <div className="crop-advisory-card">
 
-          <div className="advisory-crop">
-            {selectedCrop.emoji}
+          <div className="crop-advisory-visual">
+
+            <span>
+              {selectedCrop === "Tomato" &&
+                "🍅"}
+
+              {selectedCrop === "Onion" &&
+                "🧅"}
+
+              {selectedCrop ===
+                "Green Chilli" &&
+                "🌶️"}
+            </span>
+
           </div>
 
-          <div className="advisory-content">
 
-            <div className="advisory-title">
+          <div className="crop-advisory-content">
 
-              <h3>
-                {selectedCrop.title}
-              </h3>
+            <div className="crop-advisory-title">
 
-              <span>
-                {selectedCrop.alert}
+              <strong>
+                {selectedCrop}
+              </strong>
+
+              <span
+                className={`crop-status ${
+                  cropGuidance.status
+                    .toLowerCase()
+                    .includes("caution")
+                    ? "crop-status-warning"
+                    : "crop-status-good"
+                }`}
+              >
+                {cropGuidance.status}
               </span>
 
             </div>
 
             <p>
-              {selectedCrop.advice}
+              {cropGuidance.text}
             </p>
 
           </div>
@@ -400,103 +909,105 @@ function Weather() {
       </section>
 
 
-      {/* FARMING CONDITIONS */}
+      {/* ===================================================
+          FARMING CONDITIONS
+      =================================================== */}
 
-      <section className="conditions-section">
+      <section className="weather-section">
 
-        <div className="section-heading">
+        <div className="weather-section-header">
 
           <div>
-            <h2>Today's Farming Conditions</h2>
+            <h2>
+              Today's Farming Conditions
+            </h2>
 
             <p>
-              Quick indicators for field activities.
+              Quick indicators based on
+              current forecast conditions.
             </p>
           </div>
 
         </div>
 
 
-        <div className="condition-grid">
+        <div className="farming-conditions-grid">
 
-          <div className="condition-card">
+          {farmingConditions.map(
+            (item) => {
 
-            <div className="condition-top">
-              <Sun size={17} />
-              <span>Field Work</span>
-            </div>
+              const Icon = item.icon;
 
-            <strong>Good</strong>
+              const caution =
+                item.status
+                  .toLowerCase()
+                  .includes("caution") ||
+                item.status
+                  .toLowerCase()
+                  .includes("moderate") ||
+                item.status
+                  .toLowerCase()
+                  .includes("review");
 
-            <p>
-              Suitable until afternoon
-            </p>
+              return (
+                <div
+                  className="farming-condition-card"
+                  key={item.title}
+                >
 
-          </div>
+                  <div className="farming-condition-icon">
+                    <Icon size={15} />
+                  </div>
 
+                  <div className="farming-condition-content">
 
-          <div className="condition-card">
+                    <span>
+                      {item.title}
+                    </span>
 
-            <div className="condition-top">
-              <Droplets size={17} />
-              <span>Irrigation</span>
-            </div>
+                    <strong
+                      className={
+                        caution
+                          ? "condition-caution"
+                          : "condition-good"
+                      }
+                    >
+                      {item.status}
+                    </strong>
 
-            <strong>Low Need</strong>
+                    <small>
+                      {item.description}
+                    </small>
 
-            <p>
-              Soil moisture likely adequate
-            </p>
+                  </div>
 
-          </div>
-
-
-          <div className="condition-card">
-
-            <div className="condition-top">
-              <CloudRain size={17} />
-              <span>Harvesting</span>
-            </div>
-
-            <strong>Moderate</strong>
-
-            <p>
-              Check rainfall before harvest
-            </p>
-
-          </div>
-
-
-          <div className="condition-card">
-
-            <div className="condition-top">
-              <Wind size={17} />
-              <span>Spraying</span>
-            </div>
-
-            <strong>Good</strong>
-
-            <p>
-              Low wind conditions
-            </p>
-
-          </div>
+                </div>
+              );
+            }
+          )}
 
         </div>
 
       </section>
 
 
-      {/* FOOTER */}
+      {/* ===================================================
+          SOURCE / DISCLAIMER
+      =================================================== */}
 
       <div className="weather-footer">
 
-        <CloudSun size={15} />
+        <CloudSun size={13} />
 
         <span>
-          Weather information shown is indicative
-          and should be used together with local
-          observations and official advisories.
+          Weather information is sourced from{" "}
+          <strong>
+            {weatherData?.source ||
+              "Open-Meteo"}
+          </strong>
+          . Conditions and forecasts may
+          change as new weather data becomes
+          available.
         </span>
 
       </div>
@@ -504,5 +1015,6 @@ function Weather() {
     </div>
   );
 }
+
 
 export default Weather;

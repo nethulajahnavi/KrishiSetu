@@ -1,3 +1,7 @@
+/* =========================================================
+   KRISHISETU — SIDEBAR
+========================================================= */
+
 .sidebar {
   position: fixed;
 
@@ -5,74 +9,84 @@
   left: 0;
   bottom: 0;
 
-  width: 250px;
-
-  background: #ffffff;
-
-  border-right: 1px solid var(--border);
+  width: var(--ks-sidebar-width);
 
   display: flex;
   flex-direction: column;
 
+  padding: 20px 14px 14px;
+
+  background: var(--ks-surface);
+
+  border-right: 1px solid var(--ks-border);
+
   z-index: 100;
 
-  padding: 22px 15px;
-
   box-shadow:
-    4px 0 24px rgba(30, 60, 30, 0.025);
+    3px 0 18px rgba(23, 32, 25, 0.025);
+
+  /* Prevent content from visually escaping the sidebar */
+  overflow: hidden;
 }
 
 
 /* =========================================================
-   HEADER
+   BRAND
 ========================================================= */
 
 .sidebar-header {
   display: flex;
-
   align-items: center;
 
   gap: 11px;
 
-  padding: 5px 8px 28px;
+  padding: 4px 9px 25px;
+
+  border-bottom: 1px solid var(--ks-border-light);
+
+  flex-shrink: 0;
 }
 
 .sidebar-logo {
-  width: 40px;
-  height: 40px;
-
-  border-radius: 12px;
+  width: 38px;
+  height: 38px;
 
   display: flex;
   align-items: center;
   justify-content: center;
 
-  background: var(--primary-light);
+  flex-shrink: 0;
 
-  font-size: 21px;
+  border-radius: 11px;
 
-  box-shadow:
-    0 5px 18px var(--role-glow);
+  background: var(--role-soft);
+
+  color: var(--role-primary);
 }
 
 .sidebar-brand {
   display: flex;
-
   flex-direction: column;
+
+  min-width: 0;
 }
 
 .sidebar-brand strong {
-  font-size: 17px;
+  color: var(--ks-text);
 
-  color: var(--primary-dark);
+  font-size: 16px;
+  font-weight: 750;
+
+  letter-spacing: -0.2px;
 }
 
 .sidebar-brand span {
-  font-size: 10px;
-
-  color: var(--muted);
-
   margin-top: 2px;
+
+  color: var(--ks-text-muted);
+
+  font-size: 10px;
+  font-weight: 500;
 }
 
 .sidebar-close {
@@ -81,27 +95,68 @@
 
 
 /* =========================================================
-   SECTION
+   WORKSPACE SECTION
 ========================================================= */
 
 .sidebar-section {
-  flex: 1;
+  /*
+    This is the only section allowed to consume
+    remaining vertical space.
+  */
+  flex: 1 1 auto;
+
+  min-height: 0;
+
+  padding-top: 24px;
+
+  /*
+    If the screen is short, only the workspace
+    navigation scrolls.
+  */
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  scrollbar-width: thin;
+
+  scrollbar-color:
+    #cbd3cc
+    transparent;
 }
+
+
+/* WebKit scrollbar */
+
+.sidebar-section::-webkit-scrollbar {
+  width: 5px;
+}
+
+.sidebar-section::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar-section::-webkit-scrollbar-thumb {
+  background: #cbd3cc;
+  border-radius: 999px;
+}
+
+
+/* =========================================================
+   SECTION TITLE
+========================================================= */
 
 .sidebar-title {
   display: block;
 
-  padding: 0 12px;
+  padding: 0 11px;
 
-  margin-bottom: 9px;
+  margin-bottom: 8px;
 
-  font-size: 10px;
+  color: var(--ks-text-light);
 
+  font-size: 9px;
   font-weight: 800;
 
-  letter-spacing: 0.8px;
-
-  color: #a1aaa1;
+  letter-spacing: 1px;
 }
 
 
@@ -111,52 +166,75 @@
 
 .sidebar-nav {
   display: flex;
-
   flex-direction: column;
 
-  gap: 4px;
+  gap: 2px;
 }
+
+
+/* =========================================================
+   SIDEBAR LINKS
+========================================================= */
 
 .sidebar-link {
   position: relative;
 
   width: 100%;
-
-  min-height: 44px;
+  min-height: 40px;
 
   display: flex;
-
   align-items: center;
 
-  gap: 12px;
+  gap: 11px;
 
-  padding: 0 12px;
+  padding: 0 11px;
 
-  border-radius: 11px;
-
-  border: none;
+  border: 1px solid transparent;
+  border-radius: var(--ks-radius-md);
 
   background: transparent;
 
-  color: #667066;
+  color: var(--ks-text-secondary);
 
-  font-size: 13px;
+  font-size: 12.5px;
+  font-weight: 550;
 
-  font-weight: 500;
+  text-align: left;
+  text-decoration: none;
 
   cursor: pointer;
 
-  text-decoration: none;
-
-  text-align: left;
+  flex-shrink: 0;
 }
 
-.sidebar-link svg {
+
+/* =========================================================
+   ICON
+========================================================= */
+
+.sidebar-icon {
+  width: 27px;
+  height: 27px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   flex-shrink: 0;
 
+  color: currentColor;
+
   transition:
-    color 0.2s ease,
-    transform 0.2s ease;
+    color 0.18s ease,
+    transform 0.18s ease;
+}
+
+.sidebar-link-label {
+  white-space: nowrap;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
 }
 
 
@@ -165,57 +243,57 @@
 ========================================================= */
 
 .sidebar-link:hover {
-  background: var(--role-soft);
+  background: var(--ks-surface-soft);
 
   color: var(--role-primary);
+
+  border-color: var(--ks-border-light);
 }
 
-.sidebar-link:hover svg {
-  color: var(--role-primary);
-
+.sidebar-link:hover .sidebar-icon {
   transform: translateX(1px);
 }
 
 
 /* =========================================================
    ACTIVE
-   Role colour appears only here.
 ========================================================= */
 
 .sidebar-link.active {
-  background: var(--primary-light);
+  background: var(--role-soft);
 
-  color: var(--primary-dark);
+  color: var(--role-primary-dark);
 
   font-weight: 700;
+
+  border-color: transparent;
 }
-
-
-/* Small role-colour indicator */
 
 .sidebar-link.active::before {
   content: "";
 
   position: absolute;
 
-  left: 0;
+  left: -14px;
 
-  top: 10px;
-  bottom: 10px;
+  top: 8px;
+  bottom: 8px;
 
   width: 3px;
 
   border-radius: 0 4px 4px 0;
 
   background: var(--role-primary);
-
-  box-shadow:
-    0 0 9px var(--role-glow);
 }
 
-.sidebar-link.active svg {
+.sidebar-link.active .sidebar-icon {
   color: var(--role-primary);
 }
+
+
+/* =========================================================
+   BUTTON LINKS
+========================================================= */
 
 .sidebar-button {
   font-family: inherit;
@@ -223,23 +301,29 @@
 
 
 /* =========================================================
-   BOTTOM
+   ACCOUNT SECTION
 ========================================================= */
 
 .sidebar-bottom {
   display: flex;
-
   flex-direction: column;
 
-  gap: 4px;
+  gap: 2px;
 
-  margin-top: 20px;
+  /*
+    IMPORTANT:
+    Account must never shrink into the workspace.
+  */
+  flex-shrink: 0;
 
-  padding-bottom: 15px;
+  padding-top: 17px;
+  padding-bottom: 13px;
+
+  border-top: 1px solid var(--ks-border-light);
 }
 
 .sidebar-bottom .sidebar-title {
-  margin-bottom: 5px;
+  margin-bottom: 6px;
 }
 
 
@@ -248,79 +332,84 @@
 ========================================================= */
 
 .sidebar-link.logout:hover {
-  color: #c62828;
+  background: var(--ks-danger-bg);
 
-  background: #fff3f3;
+  color: var(--ks-danger);
+
+  border-color: transparent;
 }
 
-.sidebar-link.logout:hover svg {
-  color: #c62828;
+.sidebar-link.logout:hover .sidebar-icon {
+  color: var(--ks-danger);
 }
 
 
 /* =========================================================
-   PROFILE
+   USER PROFILE
 ========================================================= */
 
 .sidebar-profile {
-  border-top: 1px solid var(--border);
-
-  padding: 18px 8px 3px;
-
   display: flex;
-
   align-items: center;
 
   gap: 10px;
+
+  /*
+    IMPORTANT:
+    Profile must always keep its own space.
+  */
+  flex-shrink: 0;
+
+  padding: 14px 8px 3px;
+
+  border-top: 1px solid var(--ks-border);
 }
 
 .profile-avatar {
-  width: 36px;
-  height: 36px;
-
-  border-radius: 50%;
-
-  background: var(--primary);
-
-  color: white;
+  width: 35px;
+  height: 35px;
 
   display: flex;
-
   align-items: center;
   justify-content: center;
 
-  font-size: 13px;
+  flex-shrink: 0;
 
-  font-weight: 700;
+  border-radius: 10px;
 
-  box-shadow:
-    0 5px 14px var(--role-glow);
+  background: var(--role-primary);
+
+  color: white;
+
+  font-size: 12px;
+  font-weight: 750;
 }
 
 .profile-info {
   display: flex;
-
   flex-direction: column;
 
   min-width: 0;
 }
 
 .profile-info strong {
-  font-size: 12px;
-
-  white-space: nowrap;
-
   overflow: hidden;
 
+  color: var(--ks-text);
+
+  font-size: 11.5px;
+  font-weight: 700;
+
+  white-space: nowrap;
   text-overflow: ellipsis;
 }
 
 .profile-info span {
-  font-size: 11px;
-
-  color: var(--muted);
-
   margin-top: 2px;
+
+  color: var(--ks-text-muted);
+
+  font-size: 10px;
 }
 
 
@@ -334,7 +423,7 @@
 
 
 /* =========================================================
-   MOBILE
+   MOBILE SIDEBAR
 ========================================================= */
 
 @media (max-width: 900px) {
@@ -347,7 +436,7 @@
       box-shadow 0.25s ease;
 
     box-shadow:
-      10px 0 30px rgba(0, 0, 0, 0.08);
+      16px 0 40px rgba(23, 32, 25, 0.14);
   }
 
   .sidebar-mobile-open {
@@ -355,17 +444,29 @@
   }
 
   .sidebar-close {
+    width: 34px;
+    height: 34px;
+
     display: flex;
+    align-items: center;
+    justify-content: center;
 
     margin-left: auto;
 
-    border: none;
+    border: 0;
+    border-radius: 9px;
 
     background: transparent;
 
-    color: var(--muted);
+    color: var(--ks-text-muted);
 
     cursor: pointer;
+  }
+
+  .sidebar-close:hover {
+    background: var(--ks-surface-soft);
+
+    color: var(--ks-text);
   }
 
   .sidebar-overlay {
@@ -375,9 +476,27 @@
 
     inset: 0;
 
-    background: rgba(0, 0, 0, 0.3);
+    background:
+      rgba(15, 23, 18, 0.30);
+
+    backdrop-filter: blur(2px);
 
     z-index: 90;
+  }
+}
+
+
+/* =========================================================
+   SMALL MOBILE
+========================================================= */
+
+@media (max-width: 520px) {
+
+  .sidebar {
+    width: min(
+      var(--ks-sidebar-width),
+      calc(100vw - 32px)
+    );
   }
 
 }

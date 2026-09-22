@@ -77,8 +77,9 @@ function DashboardLayout() {
     "FARMER";
 
   const normalizedRole =
-    String(role).toLowerCase();
-
+  String(role)
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
 
   return (
     <div

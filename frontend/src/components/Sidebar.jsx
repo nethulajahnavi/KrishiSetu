@@ -1,20 +1,27 @@
 import { useEffect, useState } from "react";
 import {
   BarChart3,
+  Bell,
   Bot,
   CloudSun,
   Handshake,
   LayoutDashboard,
   LogOut,
+  PackageSearch,
   Settings,
   ShoppingBasket,
   Truck,
   User,
+  Users,
+  WalletCards,
   X,
+  Leaf,
+  ClipboardList,
+  MapPinned,
+  ShieldCheck,
 } from "lucide-react";
 
 import { NavLink, useNavigate } from "react-router-dom";
-
 import "./Sidebar.css";
 
 function Sidebar({ mobileOpen, setMobileOpen }) {
@@ -22,7 +29,6 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
 
   const [user, setUser] = useState(null);
 
-  // Load logged-in user
   useEffect(() => {
     function loadUser() {
       try {
@@ -34,11 +40,7 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
           setUser(null);
         }
       } catch (error) {
-        console.error(
-          "Error reading logged-in user:",
-          error
-        );
-
+        console.error("Error reading logged-in user:", error);
         setUser(null);
       }
     }
@@ -52,67 +54,196 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
     };
   }, []);
 
-  // Main menu
-  const menuItems = [
-    {
-      label: "Dashboard",
-      icon: LayoutDashboard,
-      path: "/dashboard",
-    },
-    {
-      label: "Market Prices",
-      icon: ShoppingBasket,
-      path: "/dashboard/market-prices",
-    },
-    {
-      label: "Net Realisation",
-      icon: BarChart3,
-      path: "/dashboard/net-realisation",
-    },
-    {
-      label: "Logistics",
-      icon: Truck,
-      path: "/dashboard/logistics",
-    },
-    {
-      label: "Buyer Trust",
-      icon: Handshake,
-      path: "/dashboard/buyer-trust",
-    },
-    {
-      label: "Weather",
-      icon: CloudSun,
-      path: "/dashboard/weather",
-    },
-    {
-      label: "AI Assistant",
-      icon: Bot,
-      path: "/dashboard/assistant",
-    },
-  ];
-
-  // User information
   const userName =
     user?.name ||
     user?.full_name ||
     user?.username ||
-    "Farmer";
+    "User";
 
   const userRole =
     user?.role ||
+    localStorage.getItem("selectedRole") ||
     "Farmer";
 
-  const avatarLetter =
-    userName.trim().charAt(0).toUpperCase() || "F";
+  const normalizedRole = String(userRole)
+    .toLowerCase()
+    .replace(/[\s_-]+/g, "");
 
-  // Close mobile sidebar
+  const roleLabelMap = {
+    farmer: "Farmer",
+    buyer: "Buyer",
+    transporter: "Transporter",
+    admin: "Admin",
+  };
+
+  const displayRole =
+    roleLabelMap[normalizedRole] || "Farmer";
+
+  /*
+   * =========================================================
+   * ROLE-BASED WORKSPACE MENUS
+   * =========================================================
+   *
+   * Farmer:
+   * Decision making + market discovery
+   *
+   * Buyer:
+   * Procurement + offers + transactions
+   *
+   * Transporter:
+   * Jobs + active deliveries + logistics
+   *
+   * Admin:
+   * Platform monitoring + users + transactions
+   */
+
+  const ROLE_MENUS = {
+    farmer: [
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/dashboard",
+      },
+      {
+        label: "Market Prices",
+        icon: ShoppingBasket,
+        path: "/dashboard/market-prices",
+      },
+      {
+        label: "Net Realisation",
+        icon: BarChart3,
+        path: "/dashboard/net-realisation",
+      },
+      {
+        label: "Logistics",
+        icon: Truck,
+        path: "/dashboard/logistics",
+      },
+      {
+        label: "Buyer Trust",
+        icon: Handshake,
+        path: "/dashboard/buyer-trust",
+      },
+      {
+        label: "Weather",
+        icon: CloudSun,
+        path: "/dashboard/weather",
+      },
+      {
+        label: "AI Assistant",
+        icon: Bot,
+        path: "/dashboard/assistant",
+      },
+    ],
+
+    buyer: [
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/dashboard",
+      },
+      {
+        label: "Marketplace",
+        icon: PackageSearch,
+        path: "/dashboard/marketplace",
+      },
+      {
+        label: "Requirements",
+        icon: ClipboardList,
+        path: "/dashboard/requirements",
+      },
+      {
+        label: "Offers",
+        icon: Handshake,
+        path: "/dashboard/offers",
+      },
+      {
+        label: "Transactions",
+        icon: WalletCards,
+        path: "/dashboard/transactions",
+      },
+      {
+        label: "Logistics",
+        icon: Truck,
+        path: "/dashboard/logistics",
+      },
+    ],
+
+    transporter: [
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/dashboard",
+      },
+      {
+        label: "Available Jobs",
+        icon: PackageSearch,
+        path: "/dashboard/jobs",
+      },
+      {
+        label: "Active Deliveries",
+        icon: Truck,
+        path: "/dashboard/deliveries",
+      },
+      {
+        label: "Routes",
+        icon: MapPinned,
+        path: "/dashboard/routes",
+      },
+      {
+        label: "Completed Jobs",
+        icon: ClipboardList,
+        path: "/dashboard/completed-jobs",
+      },
+    ],
+
+    admin: [
+      {
+        label: "Dashboard",
+        icon: LayoutDashboard,
+        path: "/dashboard",
+      },
+      {
+        label: "Users",
+        icon: Users,
+        path: "/dashboard/users",
+      },
+      {
+        label: "Verification",
+        icon: ShieldCheck,
+        path: "/dashboard/verification",
+      },
+      {
+        label: "Transactions",
+        icon: WalletCards,
+        path: "/dashboard/transactions",
+      },
+      {
+        label: "Logistics",
+        icon: Truck,
+        path: "/dashboard/logistics",
+      },
+      {
+        label: "Notifications",
+        icon: Bell,
+        path: "/dashboard/notifications",
+      },
+    ],
+  };
+
+  const menuItems =
+    ROLE_MENUS[normalizedRole] ||
+    ROLE_MENUS.farmer;
+
+  const avatarLetter =
+    userName.trim().charAt(0).toUpperCase() || "U";
+
   const closeMobileSidebar = () => {
     if (setMobileOpen) {
       setMobileOpen(false);
     }
   };
 
-  // SETTINGS
   const handleSettings = (event) => {
     event.preventDefault();
     event.stopPropagation();
@@ -122,17 +253,17 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
     navigate("/dashboard/settings");
   };
 
-  // LOGOUT
   const handleLogout = (event) => {
+    console.log("🔥 LOGOUT HANDLER CALLED");
     event.preventDefault();
     event.stopPropagation();
 
-    // Remove authentication information
     localStorage.removeItem("krishisetu_token");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     localStorage.removeItem("rememberMe");
     localStorage.removeItem("selectedRole");
+    localStorage.removeItem("role");
 
     setUser(null);
 
@@ -145,7 +276,6 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
 
   return (
     <>
-      {/* Mobile overlay */}
       {mobileOpen && (
         <div
           className="sidebar-overlay"
@@ -155,17 +285,18 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
 
       <aside
         className={`sidebar ${
-          mobileOpen
-            ? "sidebar-mobile-open"
-            : ""
+          mobileOpen ? "sidebar-mobile-open" : ""
         }`}
       >
 
-        {/* Logo */}
+        {/* =================================================
+            BRAND
+        ================================================= */}
+
         <div className="sidebar-header">
 
           <div className="sidebar-logo">
-            🌱
+            <Leaf size={20} strokeWidth={2.2} />
           </div>
 
           <div className="sidebar-brand">
@@ -182,17 +313,20 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
             onClick={closeMobileSidebar}
             aria-label="Close menu"
           >
-            <X size={21} />
+            <X size={20} />
           </button>
 
         </div>
 
 
-        {/* Main Navigation */}
+        {/* =================================================
+            NAVIGATION
+        ================================================= */}
+
         <div className="sidebar-section">
 
           <span className="sidebar-title">
-            MAIN MENU
+            WORKSPACE
           </span>
 
           <nav className="sidebar-nav">
@@ -207,20 +341,18 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
                   end={
                     item.path === "/dashboard"
                   }
-                  onClick={
-                    closeMobileSidebar
-                  }
+                  onClick={closeMobileSidebar}
                   className={({ isActive }) =>
                     `sidebar-link ${
-                      isActive
-                        ? "active"
-                        : ""
+                      isActive ? "active" : ""
                     }`
                   }
                 >
-                  <Icon size={19} />
+                  <span className="sidebar-icon">
+                    <Icon size={18} />
+                  </span>
 
-                  <span>
+                  <span className="sidebar-link-label">
                     {item.label}
                   </span>
                 </NavLink>
@@ -232,59 +364,60 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
         </div>
 
 
-        {/* Account */}
+        {/* =================================================
+            ACCOUNT
+        ================================================= */}
+
         <div className="sidebar-bottom">
 
           <span className="sidebar-title">
             ACCOUNT
           </span>
 
-
-          {/* Profile */}
           <NavLink
             to="/dashboard/profile"
-            onClick={
-              closeMobileSidebar
-            }
+            onClick={closeMobileSidebar}
             className={({ isActive }) =>
               `sidebar-link ${
-                isActive
-                  ? "active"
-                  : ""
+                isActive ? "active" : ""
               }`
             }
           >
-            <User size={19} />
+            <span className="sidebar-icon">
+              <User size={18} />
+            </span>
 
-            <span>
+            <span className="sidebar-link-label">
               Profile
             </span>
           </NavLink>
 
 
-          {/* Settings */}
           <button
             type="button"
             className="sidebar-link sidebar-button"
             onClick={handleSettings}
           >
-            <Settings size={19} />
+            <span className="sidebar-icon">
+              <Settings size={18} />
+            </span>
 
-            <span>
+            <span className="sidebar-link-label">
               Settings
             </span>
           </button>
 
 
-          {/* Logout */}
           <button
             type="button"
             className="sidebar-link sidebar-button logout"
             onClick={handleLogout}
           >
-            <LogOut size={19} />
+            <span className="sidebar-icon">
+              <LogOut size={18} />
+            </span>
 
-            <span>
+            <span className="sidebar-link-label">
               Logout
             </span>
           </button>
@@ -292,7 +425,10 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
         </div>
 
 
-        {/* Logged-in user */}
+        {/* =================================================
+            USER PROFILE
+        ================================================= */}
+
         <div className="sidebar-profile">
 
           <div className="profile-avatar">
@@ -306,7 +442,7 @@ function Sidebar({ mobileOpen, setMobileOpen }) {
             </strong>
 
             <span>
-              {userRole}
+              {displayRole}
             </span>
 
           </div>

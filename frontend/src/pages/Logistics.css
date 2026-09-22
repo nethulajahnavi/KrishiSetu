@@ -1,299 +1,464 @@
 .logistics-page {
+  width: 100%;
   max-width: 1400px;
   margin: 0 auto;
+  padding-bottom: 32px;
 }
 
-
-/* HEADER */
+/* ================================
+   HEADER
+================================ */
 
 .logistics-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
+  gap: 24px;
   margin-bottom: 24px;
 }
 
 .logistics-header h1 {
-  font-size: 28px;
-  letter-spacing: -0.8px;
-  margin: 5px 0 6px;
+  margin: 6px 0 7px;
+  color: var(--ks-text);
+  font-size: 30px;
+  line-height: 1.15;
+  letter-spacing: -0.9px;
+  font-weight: 750;
 }
 
 .logistics-header p {
-  color: var(--muted);
+  max-width: 620px;
+  color: var(--ks-text-secondary);
   font-size: 13px;
+  line-height: 1.55;
+}
+
+.page-eyebrow,
+.section-kicker {
+  display: inline-block;
+  color: var(--role-primary);
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 800;
+  letter-spacing: 0.9px;
 }
 
 .logistics-status {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 7px;
-
-  padding: 8px 11px;
-
-  border: 1px solid #d9e8d9;
-  background: #f0f7f0;
-
-  color: var(--primary);
-
-  border-radius: 9px;
-
-  font-size: 9px;
-  font-weight: 700;
+  gap: 8px;
+  flex-shrink: 0;
+  padding: 9px 12px;
+  border: 1px solid var(--ks-border);
+  border-radius: 10px;
+  background: var(--ks-surface);
+  color: var(--ks-text-secondary);
+  font-size: 11px;
+  font-weight: 650;
+  box-shadow: var(--ks-shadow-xs);
 }
 
 .status-dot {
   width: 7px;
   height: 7px;
-
+  flex-shrink: 0;
   border-radius: 50%;
-
-  background: #48a34d;
+  background: var(--ks-success);
 }
 
+.status-dot.loading {
+  animation: logistics-pulse 1.2s ease-in-out infinite;
+}
 
-/* ROUTE */
+@keyframes logistics-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ================================
+   ROUTE PLANNER
+================================ */
 
 .route-card {
-  background: white;
-
-  border: 1px solid var(--border);
-
-  border-radius: 15px;
-
-  padding: 21px;
-
-  box-shadow: var(--shadow);
-
-  margin-bottom: 15px;
+  margin-bottom: 16px;
+  padding: 24px;
+  border: 1px solid var(--ks-border);
+  border-radius: var(--ks-radius-lg);
+  background: var(--ks-surface);
+  box-shadow: var(--ks-shadow-sm);
 }
 
 .route-heading {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-
-  margin-bottom: 20px;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 22px;
 }
 
 .route-heading h2 {
-  font-size: 16px;
-  margin-bottom: 4px;
+  margin: 7px 0 5px;
+  color: var(--ks-text);
+  font-size: 18px;
+  line-height: 1.25;
+  font-weight: 720;
+  letter-spacing: -0.25px;
 }
 
 .route-heading p {
-  font-size: 10px;
-  color: var(--muted);
+  color: var(--ks-text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .route-icon {
-  width: 35px;
-  height: 35px;
-
+  width: 40px;
+  height: 40px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  border-radius: 9px;
-
-  color: var(--primary);
-  background: #eff6ef;
+  flex-shrink: 0;
+  border: 1px solid var(--ks-border-light);
+  border-radius: 11px;
+  background: var(--role-soft);
+  color: var(--role-primary);
 }
 
 .route-inputs {
   display: grid;
-
   grid-template-columns:
-    1fr
-    30px
-    1fr
-    0.75fr;
-
-  gap: 10px;
-
+    minmax(180px, 1fr)
+    36px
+    minmax(200px, 1fr)
+    minmax(170px, 0.7fr);
   align-items: end;
+  gap: 12px;
 }
 
 .location-field label,
 .quantity-field label {
   display: block;
-
   margin-bottom: 7px;
-
-  font-size: 8px;
-
+  color: var(--ks-text-muted);
+  font-size: 9px;
+  line-height: 1;
   font-weight: 800;
-
-  letter-spacing: 0.6px;
-
-  color: #8b938b;
+  letter-spacing: 0.7px;
 }
 
 .location-input,
 .quantity-input {
-  height: 43px;
-
+  height: 46px;
   display: flex;
   align-items: center;
-
-  gap: 8px;
-
-  padding: 0 11px;
-
-  border: 1px solid var(--border);
-
-  border-radius: 9px;
-
-  color: #8b938b;
+  gap: 9px;
+  padding: 0 12px;
+  border: 1px solid var(--ks-border);
+  border-radius: 10px;
+  background: var(--ks-surface);
+  color: var(--ks-text-muted);
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background 160ms ease;
 }
 
 .location-input:focus-within,
 .quantity-input:focus-within {
-  border-color: #9fc69f;
+  border-color: var(--role-primary);
+  background: var(--ks-surface);
+  box-shadow: 0 0 0 3px var(--role-glow);
 }
 
 .location-input input,
 .quantity-input input {
   width: 100%;
-
+  min-width: 0;
   border: none;
   outline: none;
-
-  font-size: 11px;
-
+  background: transparent;
+  color: var(--ks-text);
+  font-size: 13px;
   font-weight: 600;
 }
 
+.quantity-input input {
+  appearance: textfield;
+}
+
+.quantity-input input::-webkit-outer-spin-button,
+.quantity-input input::-webkit-inner-spin-button {
+  margin: 0;
+  appearance: none;
+}
+
 .quantity-input span {
-  color: var(--muted);
-  font-size: 9px;
+  flex-shrink: 0;
+  color: var(--ks-text-muted);
+  font-size: 11px;
+  font-weight: 600;
 }
 
 .route-arrow {
-  width: 30px;
-  height: 43px;
-
+  width: 36px;
+  height: 46px;
   display: flex;
   align-items: center;
   justify-content: center;
-
-  color: #9ca49c;
+  color: var(--ks-text-light);
 }
 
-
-/* SUMMARY */
+/* ================================
+   SUMMARY
+================================ */
 
 .logistics-summary {
   display: grid;
-
   grid-template-columns: repeat(3, 1fr);
-
   gap: 12px;
-
   margin-bottom: 18px;
 }
 
 .logistics-summary-card {
+  min-width: 0;
   display: flex;
-
   align-items: center;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid var(--ks-border);
+  border-radius: var(--ks-radius-md);
+  background: var(--ks-surface);
+  box-shadow: var(--ks-shadow-xs);
+}
 
-  gap: 10px;
-
-  padding: 13px;
-
-  background: white;
-
-  border: 1px solid var(--border);
-
-  border-radius: 11px;
+.logistics-summary-card.highlight {
+  border-color: var(--role-primary);
+  background: var(--role-soft);
 }
 
 .logistics-summary-icon {
-  width: 32px;
-  height: 32px;
-
+  width: 36px;
+  height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--role-soft);
+  color: var(--role-primary);
+}
 
-  border-radius: 8px;
-
-  background: #eff6ef;
-
-  color: var(--primary);
+.summary-content {
+  min-width: 0;
 }
 
 .logistics-summary-card span {
   display: block;
+}
 
-  font-size: 8px;
-
-  color: var(--muted);
-
-  margin-bottom: 3px;
+.summary-content > span {
+  margin-bottom: 4px;
+  color: var(--ks-text-muted);
+  font-size: 9px;
+  line-height: 1;
+  font-weight: 750;
+  letter-spacing: 0.55px;
 }
 
 .logistics-summary-card strong {
   display: block;
-
-  font-size: 11px;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ks-text);
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+.summary-arrow {
+  display: inline !important;
+  margin: 0 3px;
+  color: var(--ks-text-light);
+  font-size: 12px;
+}
 
-/* TRANSPORT */
+/* ================================
+   ALERT
+================================ */
+
+.logistics-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding: 14px 16px;
+  border-radius: var(--ks-radius-md);
+}
+
+.logistics-alert.error {
+  border: 1px solid #f0d0d0;
+  background: #fff6f6;
+  color: var(--ks-danger);
+}
+
+.alert-icon {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--ks-danger-bg);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.logistics-alert strong {
+  display: block;
+  margin-bottom: 3px;
+  font-size: 12px;
+}
+
+.logistics-alert p {
+  color: #8b5757;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* ================================
+   TRANSPORT SECTION
+================================ */
 
 .transport-section {
-  background: white;
-
-  border: 1px solid var(--border);
-
-  border-radius: 15px;
-
-  box-shadow: var(--shadow);
-
   overflow: hidden;
+  border: 1px solid var(--ks-border);
+  border-radius: var(--ks-radius-lg);
+  background: var(--ks-surface);
+  box-shadow: var(--ks-shadow-sm);
 }
 
 .section-heading {
   display: flex;
-
-  justify-content: space-between;
   align-items: center;
-
-  padding: 19px 21px;
-
-  border-bottom: 1px solid #edf1ed;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 21px 24px;
+  border-bottom: 1px solid var(--ks-border-light);
 }
 
 .section-heading h2 {
-  font-size: 15px;
-
-  margin-bottom: 4px;
+  margin: 6px 0 4px;
+  color: var(--ks-text);
+  font-size: 17px;
+  line-height: 1.25;
+  font-weight: 720;
 }
 
 .section-heading p {
-  color: var(--muted);
-
-  font-size: 9px;
+  color: var(--ks-text-secondary);
+  font-size: 11px;
+  line-height: 1.45;
 }
 
 .option-count {
-  padding: 6px 9px;
-
-  background: #f3f6f3;
-
-  border-radius: 7px;
-
-  color: #7d857d;
-
-  font-size: 8px;
-
+  flex-shrink: 0;
+  padding: 7px 10px;
+  border: 1px solid var(--ks-border-light);
+  border-radius: 8px;
+  background: var(--ks-surface-soft);
+  color: var(--ks-text-secondary);
+  font-size: 10px;
   font-weight: 700;
 }
 
+/* ================================
+   LOADING
+================================ */
 
-/* TRANSPORT CARD */
+.logistics-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 30px 24px;
+}
+
+.loading-spinner {
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border: 2px solid var(--ks-border);
+  border-top-color: var(--role-primary);
+  border-radius: 50%;
+  animation: logistics-spin 0.8s linear infinite;
+}
+
+@keyframes logistics-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logistics-loading strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--ks-text);
+  font-size: 12px;
+}
+
+.logistics-loading p {
+  color: var(--ks-text-muted);
+  font-size: 11px;
+}
+
+/* ================================
+   EMPTY
+================================ */
+
+.transport-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 42px 24px;
+  text-align: center;
+}
+
+.empty-icon {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  background: var(--ks-surface-soft);
+  color: var(--ks-text-muted);
+}
+
+.transport-empty strong {
+  margin-bottom: 5px;
+  color: var(--ks-text);
+  font-size: 13px;
+}
+
+.transport-empty p {
+  max-width: 360px;
+  color: var(--ks-text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* ================================
+   TRANSPORT LIST
+================================ */
 
 .transport-list {
   display: flex;
@@ -301,25 +466,25 @@
 }
 
 .transport-card {
+  width: 100%;
   display: grid;
-
   grid-template-columns:
-    1.3fr
-    1fr
-    0.55fr
-    30px;
-
+    minmax(240px, 1.35fr)
+    minmax(180px, 1fr)
+    minmax(150px, 0.65fr)
+    28px;
   align-items: center;
-
-  gap: 15px;
-
-  padding: 16px 21px;
-
-  border-bottom: 1px solid #edf1ed;
-
+  gap: 18px;
+  padding: 17px 24px;
+  border: none;
+  border-bottom: 1px solid var(--ks-border-light);
+  background: var(--ks-surface);
+  color: inherit;
+  text-align: left;
   cursor: pointer;
-
-  transition: background 0.2s ease;
+  transition:
+    background 160ms ease,
+    box-shadow 160ms ease;
 }
 
 .transport-card:last-child {
@@ -327,331 +492,475 @@
 }
 
 .transport-card:hover {
-  background: #fafcf9;
+  background: var(--ks-surface-hover);
 }
 
 .transport-card.selected {
-  background: #f4f9f3;
+  background: var(--role-soft);
+  box-shadow: inset 3px 0 0 var(--role-primary);
 }
 
 .transport-main {
+  min-width: 0;
   display: flex;
-
   align-items: center;
-
-  gap: 11px;
+  gap: 12px;
 }
 
 .vehicle-icon {
-  width: 42px;
-  height: 42px;
-
+  width: 44px;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
+  border: 1px solid var(--ks-border-light);
+  border-radius: 11px;
+  background: var(--ks-surface-soft);
+  color: var(--role-primary);
+}
 
-  background: #f1f5f1;
-
-  border-radius: 10px;
-
-  font-size: 21px;
+.transport-name {
+  min-width: 0;
 }
 
 .transport-title {
   display: flex;
-
   align-items: center;
-
-  gap: 7px;
-
+  gap: 8px;
+  min-width: 0;
   margin-bottom: 4px;
 }
 
-.transport-name strong {
-  font-size: 11px;
+.transport-title strong {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--ks-text);
+  font-size: 13px;
+  font-weight: 700;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .transport-name > span {
-  color: var(--muted);
-
-  font-size: 9px;
+  display: block;
+  overflow: hidden;
+  color: var(--ks-text-muted);
+  font-size: 11px;
+  line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.recommended-badge {
-  padding: 3px 6px;
-
-  background: #e6f3e4;
-
-  color: #438249;
-
-  border-radius: 5px;
-
-  font-size: 7px;
-
+.selected-badge {
+  flex-shrink: 0;
+  padding: 4px 7px;
+  border-radius: 6px;
+  background: var(--ks-surface);
+  color: var(--role-primary);
+  font-size: 8px;
   font-weight: 800;
+  letter-spacing: 0.35px;
 }
+
+/* ================================
+   TRANSPORT DETAILS
+================================ */
 
 .transport-detail {
   display: flex;
-
-  gap: 13px;
+  flex-wrap: wrap;
+  gap: 12px;
 }
 
 .transport-detail span {
-  display: flex;
-
+  display: inline-flex;
   align-items: center;
-
-  gap: 4px;
-
-  color: #858d85;
-
-  font-size: 8px;
+  gap: 5px;
+  color: var(--ks-text-secondary);
+  font-size: 10px;
+  white-space: nowrap;
 }
 
-.transport-price {
+.transport-detail svg {
+  color: var(--ks-text-muted);
+}
+
+/* ================================
+   TRANSPORT COST
+================================ */
+
+.transport-cost {
   text-align: right;
 }
 
-.transport-price strong {
+.transport-cost strong {
   display: block;
-
-  font-size: 14px;
-
-  color: #254e2a;
+  color: var(--ks-text);
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 750;
 }
 
-.transport-price span {
-  font-size: 8px;
-
-  color: var(--muted);
+.transport-cost span {
+  display: block;
+  margin-top: 3px;
+  color: var(--ks-text-muted);
+  font-size: 9px;
 }
+
+/* ================================
+   SELECT
+================================ */
 
 .transport-select {
   display: flex;
-
   align-items: center;
   justify-content: center;
+  color: var(--role-primary);
 }
 
 .select-circle {
   width: 18px;
   height: 18px;
-
+  display: block;
   border: 1.5px solid #c5cec5;
-
   border-radius: 50%;
+  transition:
+    border-color 160ms ease,
+    transform 160ms ease;
 }
 
-.selected-check {
-  color: var(--primary);
+.transport-card:hover .select-circle {
+  border-color: var(--role-primary);
 }
 
+.transport-card.selected .select-circle {
+  border-color: var(--role-primary);
+}
 
-/* RECOMMENDATION */
+/* ================================
+   SELECTED TRANSPORT
+================================ */
 
-.logistics-recommendation {
+.selected-transport-card {
   display: flex;
-
   align-items: center;
-
-  gap: 12px;
-
-  margin-top: 15px;
-
-  padding: 16px;
-
-  background: #f1f7ef;
-
-  border: 1px solid #dce9d9;
-
-  border-radius: 13px;
+  justify-content: space-between;
+  gap: 24px;
+  margin-top: 18px;
+  padding: 20px 22px;
+  border: 1px solid var(--role-primary);
+  border-radius: var(--ks-radius-lg);
+  background: var(--role-soft);
 }
 
-.recommendation-symbol {
-  width: 37px;
-  height: 37px;
-
+.selected-transport-left {
+  min-width: 0;
   display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
+.selected-transport-icon {
+  width: 38px;
+  height: 38px;
+  display: flex;
   align-items: center;
   justify-content: center;
-
-  background: white;
-
-  border-radius: 9px;
-
-  font-size: 18px;
+  flex-shrink: 0;
+  border-radius: 10px;
+  background: var(--ks-surface);
+  color: var(--role-primary);
 }
 
-.logistics-recommendation-text {
-  flex: 1;
-}
-
-.logistics-recommendation-text > span {
+.selected-label {
+  display: block;
+  margin-bottom: 4px;
+  color: var(--role-primary);
   font-size: 8px;
-
-  font-weight: 800;
-
-  color: #6e8b70;
-
+  font-weight: 850;
   letter-spacing: 0.7px;
 }
 
-.logistics-recommendation-text h3 {
-  font-size: 11px;
-
-  margin: 3px 0;
-}
-
-.logistics-recommendation-text p {
-  color: #758075;
-
-  font-size: 9px;
-}
-
-.confirm-transport {
-  display: flex;
-
-  align-items: center;
-
-  gap: 6px;
-
-  padding: 9px 12px;
-
-  border: none;
-
-  border-radius: 8px;
-
-  background: var(--primary);
-
-  color: white;
-
-  font-size: 9px;
-
-  font-weight: 700;
-
-  cursor: pointer;
-}
-
-
-/* INFO */
-
-.route-info-card {
-  display: flex;
-
-  align-items: flex-start;
-
-  gap: 11px;
-
-  margin-top: 15px;
-
-  padding: 15px;
-
-  background: white;
-
-  border: 1px solid var(--border);
-
-  border-radius: 12px;
-}
-
-.route-info-icon {
-  width: 33px;
-  height: 33px;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: #eef4ff;
-
-  color: #5577ad;
-
-  border-radius: 8px;
-}
-
-.route-info-card h3 {
-  font-size: 10px;
-
+.selected-transport-left h3 {
   margin-bottom: 4px;
+  color: var(--ks-text);
+  font-size: 14px;
 }
 
-.route-info-card p {
-  color: var(--muted);
-
-  font-size: 9px;
-
-  line-height: 1.5;
-}
-
-
-/* FOOTER */
-
-.logistics-footer {
+.selected-transport-left p {
   display: flex;
-
   align-items: center;
-
-  gap: 7px;
-
-  margin-top: 14px;
-
-  padding: 10px 13px;
-
-  background: #f1f5f1;
-
-  border-radius: 8px;
-
-  color: #7a827a;
-
-  font-size: 8px;
+  gap: 5px;
+  color: var(--ks-text-secondary);
+  font-size: 11px;
 }
 
+.selected-transport-metrics {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
 
-/* RESPONSIVE */
+.selected-transport-metrics > div {
+  min-width: 90px;
+}
 
-@media (max-width: 900px) {
+.selected-transport-metrics span {
+  display: block;
+  margin-bottom: 5px;
+  color: var(--ks-text-muted);
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.55px;
+}
 
+.selected-transport-metrics strong {
+  color: var(--ks-text);
+  font-size: 14px;
+}
+
+.selected-transport-metrics .total-cost {
+  color: var(--role-primary-dark);
+  font-size: 16px;
+}
+
+/* ================================
+   COST BREAKDOWN
+================================ */
+
+.cost-breakdown-card {
+  margin-top: 14px;
+  padding: 20px 22px;
+  border: 1px solid var(--ks-border);
+  border-radius: var(--ks-radius-lg);
+  background: var(--ks-surface);
+  box-shadow: var(--ks-shadow-xs);
+}
+
+.cost-breakdown-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 18px;
+  color: var(--ks-text-muted);
+}
+
+.cost-breakdown-heading h2 {
+  margin-top: 6px;
+  color: var(--ks-text);
+  font-size: 15px;
+}
+
+.cost-breakdown-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.cost-breakdown-grid > div {
+  padding: 13px;
+  border: 1px solid var(--ks-border-light);
+  border-radius: 10px;
+  background: var(--ks-surface-soft);
+}
+
+.cost-breakdown-grid span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ks-text-muted);
+  font-size: 9px;
+}
+
+.cost-breakdown-grid strong {
+  color: var(--ks-text);
+  font-size: 14px;
+}
+
+.cost-breakdown-grid small {
+  margin-left: 3px;
+  color: var(--ks-text-muted);
+  font-size: 9px;
+  font-weight: 500;
+}
+
+.cost-breakdown-grid .breakdown-total {
+  border-color: var(--role-primary);
+  background: var(--role-soft);
+}
+
+.breakdown-total strong {
+  color: var(--role-primary-dark);
+}
+
+.cost-note {
+  margin-top: 13px;
+  color: var(--ks-text-muted);
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+/* ================================
+   RESPONSIVE
+================================ */
+
+@media (max-width: 1050px) {
   .route-inputs {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns:
+      minmax(160px, 1fr)
+      30px
+      minmax(180px, 1fr);
   }
 
-  .route-arrow {
-    display: none;
+  .quantity-field {
+    grid-column: 1 / -1;
   }
 
   .transport-card {
-    grid-template-columns: 1fr 1fr 0.5fr 30px;
+    grid-template-columns:
+      minmax(220px, 1.2fr)
+      1fr
+      minmax(130px, 0.6fr)
+      28px;
   }
 
+  .selected-transport-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .selected-transport-metrics {
+    width: 100%;
+  }
 }
 
-@media (max-width: 650px) {
-
-  .logistics-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
-
-  .route-inputs {
-    grid-template-columns: 1fr;
-  }
-
+@media (max-width: 800px) {
   .logistics-summary {
     grid-template-columns: 1fr;
   }
 
   .transport-card {
-    grid-template-columns: 1fr 30px;
+    grid-template-columns:
+      minmax(220px, 1fr)
+      minmax(130px, 0.6fr)
+      28px;
   }
 
   .transport-detail {
     display: none;
   }
 
-  .transport-price {
+  .transport-cost {
     text-align: left;
   }
 
+  .cost-breakdown-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 650px) {
+  .logistics-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .logistics-header h1 {
+    font-size: 26px;
+  }
+
+  .logistics-status {
+    width: 100%;
+  }
+
+  .route-card {
+    padding: 18px;
+  }
+
+  .route-inputs {
+    grid-template-columns: 1fr;
+  }
+
+  .route-arrow {
+    display: none;
+  }
+
+  .quantity-field {
+    grid-column: auto;
+  }
+
+  .section-heading {
+    align-items: flex-start;
+    padding: 18px;
+  }
+
+  .option-count {
+    margin-top: 2px;
+  }
+
+  .transport-card {
+    grid-template-columns: 1fr 28px;
+    gap: 12px;
+    padding: 15px 18px;
+  }
+
+  .transport-cost {
+    grid-column: 1;
+    margin-left: 56px;
+  }
+
+  .transport-select {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .selected-transport-card {
+    padding: 17px;
+  }
+
+  .selected-transport-metrics {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+
+  .selected-transport-metrics > div {
+    min-width: 0;
+  }
+
+  .cost-breakdown-card {
+    padding: 18px;
+  }
+
+  .cost-breakdown-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 430px) {
+  .logistics-summary-card strong {
+    font-size: 13px;
+  }
+
+  .selected-transport-metrics {
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  .selected-transport-metrics > div {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .selected-transport-metrics span {
+    margin-bottom: 0;
+  }
+
+  .cost-breakdown-grid {
+    grid-template-columns: 1fr;
+  }
 }
