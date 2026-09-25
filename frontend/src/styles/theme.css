@@ -1,0 +1,190 @@
+/* ============================================================
+   KRISHISETU GLOBAL DESIGN TOKENS
+   ============================================================ */
+
+:root {
+  /* ----------------------------------------------------------
+     Neutral system
+     ---------------------------------------------------------- */
+
+  --surface: #fafaf8;
+  --surface-elevated: #ffffff;
+  --surface-muted: #f4f4f1;
+
+  --border-color: #e8e8e3;
+  --border-strong: #d9d9d2;
+
+  --text-primary: #1a1a1a;
+  --text-secondary: #4b5563;
+  --text-muted: #6b7280;
+
+  /* ----------------------------------------------------------
+     Role theme fallback
+     Farmer is the safe default.
+     ---------------------------------------------------------- */
+
+  --theme-primary: #2e7d32;
+  --theme-primary-dark: #1b5e20;
+
+  --theme-gradient-from: #2e7d32;
+  --theme-gradient-to: #43a047;
+
+  --theme-glow: rgba(46, 125, 50, 0.18);
+  --theme-surface-tint: #e8f3e9;
+
+  --theme-text-on-primary: #ffffff;
+
+  /* ----------------------------------------------------------
+     Shadows
+     ---------------------------------------------------------- */
+
+  --shadow-soft:
+    0 1px 2px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.05);
+
+  --shadow-elevated:
+    0 4px 8px rgba(0, 0, 0, 0.06),
+    0 16px 32px rgba(0, 0, 0, 0.1);
+
+  /* ----------------------------------------------------------
+     Radius
+     ---------------------------------------------------------- */
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* ----------------------------------------------------------
+     Global theme transition
+     ---------------------------------------------------------- */
+
+  --theme-transition:
+    background-color 0.4s ease,
+    color 0.4s ease,
+    border-color 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+
+/* ============================================================
+   FARMER
+   ============================================================ */
+
+[data-role="farmer"] {
+  --theme-primary: #2e7d32;
+  --theme-primary-dark: #1b5e20;
+
+  --theme-gradient-from: #2e7d32;
+  --theme-gradient-to: #43a047;
+
+  --theme-glow: rgba(46, 125, 50, 0.18);
+  --theme-surface-tint: #e8f3e9;
+
+  --theme-text-on-primary: #ffffff;
+}
+
+
+/* ============================================================
+   BUYER
+   ============================================================ */
+
+[data-role="buyer"] {
+  --theme-primary: #fb8c00;
+  --theme-primary-dark: #e65100;
+
+  --theme-gradient-from: #fb8c00;
+  --theme-gradient-to: #ffb300;
+
+  --theme-glow: rgba(251, 140, 0, 0.18);
+  --theme-surface-tint: #fff4e5;
+
+  --theme-text-on-primary: #ffffff;
+}
+
+
+/* ============================================================
+   TRANSPORTER
+   ============================================================ */
+
+[data-role="transporter"] {
+  --theme-primary: #7b1fa2;
+  --theme-primary-dark: #4a148c;
+
+  --theme-gradient-from: #7b1fa2;
+  --theme-gradient-to: #9c27b0;
+
+  --theme-glow: rgba(123, 31, 162, 0.18);
+  --theme-surface-tint: #f5eafa;
+
+  --theme-text-on-primary: #ffffff;
+}
+
+
+/* ============================================================
+   ADMIN
+   ============================================================ */
+
+[data-role="admin"] {
+  --theme-primary: #334155;
+  --theme-primary-dark: #1e293b;
+
+  --theme-gradient-from: #334155;
+  --theme-gradient-to: #0f172a;
+
+  --theme-glow: rgba(239, 68, 68, 0.18);
+  --theme-surface-tint: #f1f5f9;
+
+  --theme-text-on-primary: #ffffff;
+}
+
+
+/* ============================================================
+   Reusable theme utilities
+   ============================================================ */
+
+.theme-bg-primary {
+  background: var(--theme-primary);
+  color: var(--theme-text-on-primary);
+}
+
+.theme-gradient {
+  background:
+    linear-gradient(
+      135deg,
+      var(--theme-gradient-from),
+      var(--theme-gradient-to)
+    );
+
+  color: var(--theme-text-on-primary);
+}
+
+.theme-text-primary {
+  color: var(--theme-primary);
+}
+
+.theme-border {
+  border-color: var(--theme-primary);
+}
+
+.theme-surface-tint {
+  background: var(--theme-surface-tint);
+}
+
+.theme-transition {
+  transition: var(--theme-transition);
+}
+
+
+/* ============================================================
+   Lite Mode
+   ============================================================ */
+
+html[data-motion="reduced"] *,
+html[data-motion="reduced"] *::before,
+html[data-motion="reduced"] *::after {
+  scroll-behavior: auto !important;
+}
+
+html[data-motion="reduced"] .skeleton {
+  animation: none !important;
+}
